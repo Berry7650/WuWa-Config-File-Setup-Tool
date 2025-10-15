@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wuthering Waves Visual Gallery</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://unpkg.com/lucide-icons@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+  <div class="background-wallpaper"></div>
+  <div class="background-overlay"></div>
+  <div class="fluid-layer"></div>
+
+  <audio id="background-music" loop>
+    <source src="your-music.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="main-content">
+    <div class="max-w-6xl mx-auto">
+      <header class="text-center mb-12">
+        <h1 id="visual-gallery-title" class="main-title animated-title">Wuthering Waves Visual Gallery</h1>
+        <div class="header-buttons">
+          <a href="index.html" class="ui-button">Back to Toolkit</a>
+        </div>
+      </header>
+
+      <section class="mb-12 ui-card">
+        <h2 class="section-title">Visual Graphics Preview (1-9)</h2>
+        <p class="text-gray-400 mt-2">Showcase of lighting, shading, and textures from various visual configurations. **These are non-config promotional/artwork photos.** Click an image to zoom.</p>
+
+        <div id="image-gallery" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+          
+          <div class="image-card animate-float cursor-pointer" onclick="openZoom('Image1.jpeg', 'Image 1')">
+            <h4 class="image-card-title">Image 1</h4>
+            <img src="Image1.jpeg" class="rounded-lg w-full h-auto">
+          </div>
+          
+          <div class="image-card animate-float cursor-pointer" onclick="openZoom('Image2.jpg', 'Image 2')">
+            <h4 class="image-card-title">Image 2</h4>
+            <img src="Image2.jpg" class="rounded-lg w-full h-auto">
+          </div>
+          
+          <div class="image-card animate-float cursor-pointer" onclick="openZoom('Image3.png', 'Image 3')">
+            <h4 class="image-card-title">Image 3</h4>
+            <img src="Image3.png" class="rounded-lg w-full h-auto">
+          </div>
+          
+          <div class="image-card animate-float cursor-pointer" onclick="openZoom('Image4.png', 'Image 4')">
+            <h4 class="image-card-title">Image 4</h4>
+            <img src="Image4.png" class="rounded-lg w-full h-auto">
+          </div>
+          
+          <div class="image-card animate-float cursor-pointer" onclick="openZoom('Image5.jpg', 'Image 5')">
+            <h4 class="image-card-title">Image 5</h4>
+            <img src="Image5.jpg" class="rounded-lg w-full h-auto">
+          </div>
+          
+          <div class="image-card animate-float cursor-pointer" onclick="openZoom('Image6.jpeg', 'Image 6')">
+            <h4 class="image-card-title">Image 6</h4>
+            <img src="Image6.jpeg" class="rounded-lg w-full h-auto">
+          </div>
+          
+          <div class="image-card animate-float cursor-pointer" onclick="openZoom('Image7.jpg', 'Image 7')">
+            <h4 class="image-card-title">Image 7</h4>
+            <img src="Image7.jpg" class="rounded-lg w-full h-auto">
+          </div>
+          
+          <div class="image-card animate-float cursor-pointer" onclick="openZoom('Image8.png', 'Image 8')">
+            <h4 class="image-card-title">Image 8</h4>
+            <img src="Image8.png" class="rounded-lg w-full h-auto">
+          </div>
+          
+          <div class="image-card animate-float cursor-pointer" onclick="openZoom('Image9.jpeg', 'Image 9')">
+            <h4 class="image-card-title">Image 9</h4>
+            <img src="Image9.jpeg" class="rounded-lg w-full h-auto">
+          </div>
+          
+        </div>
+      </section>
+
+      <section class="mb-12 ui-card">
+        <h2 class="section-title">Latest News & Updates</h2>
+        <p class="text-gray-400 mt-2">Check here for the latest updates on config files, game patches, and new features.</p>
+
+        <div class="space-y-4 mt-6">
+          <div class="list-item">
+            <p class="font-bold text-lg text-green-400 mb-1">Config v7.2 Released</p>
+            <p class="card-description">We Lost Frame Gen 90-120FPS After Update!</p>
+            <span class="text-sm text-gray-500">— Oct 00, 2025</span>
+          </div>
+          <div class="list-item">
+            <p class="font-bold text-lg text-cyan-400 mb-1">Game Patch ?.? Compatibility</p>
+            <p class="card-description">All deployment commands and existing config files are confirmed to be **fully compatible** with the recent ?.? game patch. No changes required.</p>
+            <span class="text-sm text-gray-500">— ... 00, 2025</span>
+          </div>
+          <div class="list-item">
+            <p class="font-bold text-lg text-purple-400 mb-1">Upcoming Ultra Graphics Mode</p>
+            <p class="card-description">We are testing an **experimental Ultra mode** for high-end PCs like Qulity For mobile devices. Follow our Discord for early access to the test files.</p>
+            <span class="text-sm text-gray-500">— Sep 00, 2025</span>
+          </div>
+        </div>
+      </section>
+
+      <footer class="text-center text-gray-500 text-sm py-4">
+        <p>&copy; 2025 Player42 | Wuwa Config Visuals & Updates</p>
+      </footer>
+    </div>
+  </div>
+
+  <div id="zoom-modal" class="dialog-scrim" onclick="closeZoom()">
+    <div id="zoom-container" class="fixed inset-0 flex items-center justify-center p-4" onclick="event.stopPropagation()">
+      <div class="max-w-screen-xl max-h-screen-xl w-full h-full p-4 flex flex-col items-center justify-center">
+        <button onclick="closeZoom()" class="absolute top-4 right-4 text-white text-3xl z-50 hover:text-cyan-400 transition-colors">
+            &times;
+        </button>
+        <h4 id="zoom-title" class="text-white text-lg font-bold mb-2 truncate max-w-full">Image Preview</h4>
+        <div class="bg-gray-900 border border-cyan-400/20 rounded-lg shadow-xl overflow-hidden max-w-full max-h-full">
+            <img id="zoom-image" src="" alt="Zoomed Graphic Preview" class="object-contain w-full h-full max-h-[85vh] max-w-[95vw] transition-transform duration-300">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button id="music-toggle" class="music-toggle-button">
+    <i data-lucide="volume-2"></i>
+  </button>
+  
+  <script src="script.js"></script>
+  <script>lucide.createIcons();</script>
+</body>
+</html>

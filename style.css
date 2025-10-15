@@ -1,0 +1,752 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap');
+
+:root {
+  --color-background: #020617;
+  --color-primary: #22d3ee;
+  --color-secondary: #a855f7; /* Purple */
+  --color-surface: rgba(14, 23, 46, 0.75);
+  --color-border: rgba(34, 211, 238, 0.2);
+  --color-glow: rgba(34, 211, 238, 0.5);
+  --color-text: #e2e8f0;
+  --color-text-secondary: #94a3b8;
+
+  /* Custom Colors for Command Buttons */
+  --color-button-setup: #ec4899;   /* NEW: Deep Pink for Setup */
+  --color-button-backup: #4ade80;  /* Green */
+  --color-button-delete: #f87171;  /* Red */
+  --color-button-deploy: #a855f7;  /* Purple */
+  --color-button-nav: #f59e0b;     /* Amber for Prerequisite */
+  --color-button-restore: #fcd34d; /* Amber/Gold */
+  --color-button-pink: #f472b6;    /* Pink (New for Log Copy) */
+  --color-button-exit: #e2e8f0;    /* Light Gray/Off-White for Exit */
+  --color-button-power: #dc2626;   /* Crimson/Deep Red for Power */
+  
+  /* Custom Glows */
+  --color-glow-setup: rgba(236, 72, 153, 0.5); /* NEW: Deep Pink Glow */
+  --color-glow-exit: rgba(255, 255, 255, 0.5); /* Pure White Glow */
+  --color-glow-power: rgba(220, 38, 38, 0.5); /* Crimson Glow */
+  --color-glow-nav: rgba(245, 158, 11, 0.5); /* Amber Glow */
+
+  /* Glitch Text Colors (for index.html title) */
+  --color-text-glitch-1: #22d3ee; 
+  --color-text-glitch-2: #f0abfc; /* Light Pink/Magenta */
+  --color-text-glitch-3: #4ade80; /* Bright Green */
+}
+
+/* ---------------- GLOBAL AND MOBILE OPTIMIZATIONS ---------------- */
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  overflow-x: hidden;
+  /* NEW: Android/Mobile Optimization for responsiveness and touch */
+  -webkit-tap-highlight-color: transparent; /* Removes the click overlay */
+  touch-action: manipulation; /* Optimizes touch interactions */
+}
+
+/* ---------------- BACKGROUND & FLUID ANIMATION ---------------- */
+
+@keyframes fluid-movement {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.background-wallpaper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 0;
+  background-image: url('https://images.steamusercontent.com/ugc/2475371560323522726/3B4BF8A197C8E13B5FFADA70967A3347B8EF9469/');
+  background-size: cover;
+  background-position: center;
+  filter: blur(2px); 
+  transform: scale(1.1);
+}
+
+.background-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: radial-gradient(ellipse at center, rgba(2, 6, 23, 0.4) 0%, rgba(2, 6, 23, 0.9) 100%);
+  z-index: 1;
+}
+
+.fluid-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 1; 
+    background: linear-gradient(
+        -45deg,
+        rgba(34, 211, 238, 0.1), 
+        rgba(168, 85, 247, 0.1), 
+        rgba(255, 255, 255, 0.05) 
+    );
+    background-size: 400% 400%;
+    animation: fluid-movement 25s ease infinite; 
+    opacity: 0.8;
+}
+
+.main-content {
+  position: relative;
+  z-index: 2;
+  padding: 2rem 1rem;
+  min-height: 100vh; 
+}
+
+/* ---------------- GLITCH TITLE (index.html) - ENHANCED ---------------- */
+
+/* Keyframes for Glitch Noise (More aggressive vertical and horizontal shift) */
+@keyframes glitch-noise-1 {
+  0% { transform: translate(4px, 0); clip-path: inset(50% 0 30% 0); }
+  20% { transform: translate(-2px, 2px); clip-path: inset(10% 0 80% 0); }
+  40% { transform: translate(6px, -1px); clip-path: inset(70% 0 10% 0); }
+  60% { transform: translate(-4px, 1px); clip-path: inset(20% 0 60% 0); }
+  80% { transform: translate(2px, -2px); clip-path: inset(40% 0 40% 0); }
+  100% { transform: translate(-6px, 0); clip-path: inset(60% 0 30% 0); }
+}
+
+@keyframes glitch-noise-2 {
+  0% { transform: translate(-4px, 0); clip-path: inset(20% 0 60% 0); }
+  20% { transform: translate(2px, -2px); clip-path: inset(70% 0 10% 0); }
+  40% { transform: translate(-6px, 1px); clip-path: inset(10% 0 80% 0); }
+  60% { transform: translate(4px, 0); clip-path: inset(50% 0 30% 0); }
+  80% { transform: translate(-2px, 2px); clip-path: inset(30% 0 50% 0); }
+  100% { transform: translate(6px, -1px); clip-path: inset(80% 0 10% 0); }
+}
+
+.glitch-text {
+  display: block;
+  font-family: 'Space Grotesk', sans-serif; 
+  position: relative;
+}
+
+/* Pseudo-element base styling - copies text from data-text */
+.glitch-text::before,
+.glitch-text::after {
+    content: attr(data-text); 
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: color 0.1s ease-in-out;
+}
+
+/* Glitch Activation Class (Applied by JS) */
+.glitch-effect::before {
+  /* Pink Layer - Stronger Shift/Noise */
+  text-shadow: 4px 0 var(--color-text-glitch-2);
+  clip-path: inset(50% 0 30% 0); /* Start clip */
+  animation: glitch-noise-1 0.4s linear infinite alternate;
+  z-index: -1;
+}
+
+.glitch-effect::after {
+  /* Green Layer - Stronger Shift/Noise */
+  text-shadow: -4px 0 var(--color-text-glitch-3);
+  clip-path: inset(20% 0 70% 0); /* Start clip */
+  animation: glitch-noise-2 0.4s linear infinite alternate;
+  z-index: -2;
+}
+
+/* --- NEW: FLICKER OUT CLASS (for a clean text change) --- */
+.glitch-flicker-out {
+    color: transparent; /* Hide the base text */
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 255, 255, 1); /* White Flash */
+}
+
+.glitch-flicker-out::before,
+.glitch-flicker-out::after {
+    content: "||||||||||||||||||||"; /* Add some random garbage characters */
+    color: white; 
+    text-shadow: 0 0 5px #fff;
+    clip-path: inset(0% 0 0% 0); /* Full visibility */
+    transform: translate(0, 0);
+    opacity: 0.8;
+    animation: none; /* Stop noise animation */
+}
+
+
+/* Existing Style Classes (for text color/font) */
+.style-1 {
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 0 10px var(--color-text-glitch-1), 0 0 20px var(--color-text-glitch-1);
+  letter-spacing: 0px;
+}
+.style-2 {
+  font-weight: 500;
+  color: var(--color-text-glitch-2);
+  text-transform: uppercase;
+  text-shadow: 0 0 5px var(--color-text-glitch-2);
+  letter-spacing: 2px;
+}
+.style-3 {
+  font-weight: 400;
+  font-style: italic;
+  color: var(--color-text-glitch-3);
+  text-shadow: 0 0 8px var(--color-text-glitch-3);
+  letter-spacing: 1px;
+}
+
+
+/* ---------------- COLOR ANIMATION (wuwa-visuals.html title) ---------------- */
+
+@keyframes color-cycle {
+  0%, 100% { color: var(--color-primary); } /* Cyan */
+  33% { color: var(--color-button-backup); } /* Green */
+  66% { color: var(--color-button-deploy); } /* Purple */
+}
+
+.animated-title {
+  animation: color-cycle 10s linear infinite alternate;
+  text-shadow: 0 0 10px rgba(34, 211, 238, 0.5); /* Keep some glow */
+  transition: all 0.5s ease;
+}
+
+
+/* ---------------- TYPING ANIMATION ---------------- */
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% } 
+}
+
+@keyframes blink-caret {
+  50% { border-color: transparent } 
+}
+
+.typing-text {
+  overflow: hidden; 
+  white-space: nowrap; 
+  border-right: 3px solid #fcd34d; 
+  width: 0; 
+  max-width: 100%; 
+  animation: 
+    typing 4s steps(60, end) forwards, 
+    blink-caret 0.75s step-end infinite; 
+}
+
+/* ---------------- TITLES & TEXT (Responsive Tweaks) ---------------- */
+.main-title {
+  /* Use clamp for better scaling on different mobile screen sizes */
+  font-size: clamp(1.75rem, 5vw + 1rem, 2.5rem);
+  font-weight: 700;
+  text-align: center;
+}
+
+.section-title {
+  /* Use clamp for better scaling on different mobile screen sizes */
+  font-size: clamp(1.5rem, 4vw + 0.5rem, 1.75rem);
+  font-weight: 700;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+  color: white;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+/* NEW: Custom color for the Nav card title */
+.text-nav {
+  color: var(--color-button-nav);
+}
+
+.card-description {
+  color: var(--color-text-secondary);
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+
+/* ---------------- CARDS (Touch Optimization) ---------------- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ui-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 0 10px rgba(34, 211, 238, 0.1);
+  animation: fadeInUp 0.6s ease-out forwards;
+  opacity: 0;
+  transition: all 0.2s ease; /* Faster transition for snappier mobile feel */
+  cursor: default; 
+}
+
+.ui-card:nth-of-type(n) {
+  animation-delay: calc(var(--i, 1) * 0.1s);
+}
+
+/* Card Hover/Active States */
+/* NEW: Setup Card Style */
+.ui-card-setup:hover {
+    box-shadow: 0 0 20px rgba(0,0,0,0.8), 0 0 20px var(--color-glow-setup), inset 0 0 10px rgba(236, 72, 153, 0.3); 
+    border-color: var(--color-button-setup); 
+    transform: translateY(-2px); 
+}
+/* NEW: Active State for Card Press (Mobile Feedback) */
+.ui-card:active {
+    transform: scale(0.99); /* Slight press down effect */
+    box-shadow: 0 0 10px rgba(0,0,0,0.5), inset 0 0 5px rgba(34, 211, 238, 0.2);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.ui-card-nav:hover {
+    box-shadow: 0 0 20px rgba(0,0,0,0.8), 0 0 20px var(--color-glow-nav), inset 0 0 10px rgba(245, 158, 11, 0.3);
+    border-color: var(--color-button-nav);
+    transform: translateY(-2px);
+}
+.ui-card-backup:hover {
+    box-shadow: 0 0 20px rgba(0,0,0,0.8), 0 0 20px rgba(74, 222, 128, 0.5), inset 0 0 10px rgba(74, 222, 128, 0.3);
+    border-color: var(--color-button-backup);
+    transform: translateY(-2px);
+}
+.ui-card-delete:hover {
+    box-shadow: 0 0 20px rgba(0,0,0,0.8), 0 0 20px rgba(248, 113, 113, 0.5), inset 0 0 10px rgba(248, 113, 113, 0.3);
+    border-color: var(--color-button-delete);
+    transform: translateY(-2px);
+}
+.ui-card-deploy:hover {
+    box-shadow: 0 0 20px rgba(0,0,0,0.8), 0 0 20px rgba(168, 85, 247, 0.5), inset 0 0 10px rgba(168, 85, 247, 0.3);
+    border-color: var(--color-button-deploy);
+    transform: translateY(-2px);
+}
+.ui-card-restore:hover {
+    box-shadow: 0 0 20px rgba(0,0,0,0.8), 0 0 20px rgba(252, 211, 77, 0.5), inset 0 0 10px rgba(252, 211, 77, 0.3);
+    border-color: var(--color-button-restore);
+    transform: translateY(-2px);
+}
+.ui-card-log:hover {
+    box-shadow: 0 0 20px rgba(0,0,0,0.8), 0 0 20px rgba(244, 114, 182, 0.5), inset 0 0 10px rgba(244, 114, 182, 0.3);
+    border-color: var(--color-button-pink);
+    transform: translateY(-2px);
+}
+.ui-card-power:hover {
+    box-shadow: 0 0 20px rgba(0,0,0,0.8), 0 0 20px var(--color-glow-power), inset 0 0 10px rgba(220, 38, 38, 0.3);
+    border-color: var(--color-button-power);
+    transform: translateY(-2px);
+}
+.ui-card-exit:hover {
+    box-shadow: 0 0 20px rgba(0,0,0,0.8), 0 0 20px var(--color-glow-exit), inset 0 0 10px rgba(255, 255, 255, 0.3);
+    border-color: var(--color-button-exit);
+    transform: translateY(-2px);
+}
+.ui-card-social:hover {
+    box-shadow: 0 0 20px rgba(0,0,0,0.8), 0 0 20px rgba(34, 211, 238, 0.5), inset 0 0 10px rgba(34, 211, 238, 0.3);
+    border-color: var(--color-primary); 
+    transform: translateY(-2px); 
+}
+
+
+/* ---------------- SPECIAL BLOCKS ---------------- */
+.shizuku-note {
+  background-color: rgba(245, 158, 11, 0.1);
+  border-left: 4px solid #f59e0b;
+  color: #fcd34d;
+  padding: 1rem;
+  border-radius: 0.25rem;
+}
+
+.list-item {
+  background-color: rgba(2, 6, 23, 0.5);
+  border-left: 3px solid var(--color-primary);
+  padding: 1rem;
+  border-radius: 0.25rem;
+}
+
+/* ---------------- CODE BLOCKS ---------------- */
+.code-block {
+  display: block;
+  background-color: var(--color-background);
+  color: #f5d49c;
+  padding: 0.75rem 1rem;
+  border-radius: 0.25rem;
+  font-family: monospace;
+  font-size: 0.9em;
+  white-space: pre-wrap;
+  word-break: break-all;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  margin-top: 0.5rem;
+}
+
+/* ---------------- UI BUTTONS (Generic) ---------------- */
+.ui-button {
+  background-color: transparent;
+  border: 2px solid var(--color-primary);
+  color: var(--color-primary);
+  padding: 0.6rem 1.5rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s ease; /* Faster transition */
+  clip-path: polygon(95% 0, 100% 25%, 100% 100%, 0 100%, 0 0);
+  display: inline-block;
+  text-align: center;
+}
+
+.ui-button:hover {
+  background-color: var(--color-primary);
+  color: var(--color-background);
+  box-shadow: 0 0 15px var(--color-glow);
+}
+.ui-button:active {
+    /* Mobile press feedback */
+    transform: scale(0.98); 
+    opacity: 0.9;
+}
+
+
+/* ---------------- CUSTOM COMMAND BUTTONS (Touch Optimization) ---------------- */
+.ui-button-custom {
+  background-color: transparent;
+  padding: 0.6rem 1.5rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s ease; /* Faster transition */
+  clip-path: polygon(95% 0, 100% 25%, 100% 100%, 0 100%, 0 0);
+  display: inline-block;
+  text-align: center;
+  border: 2px solid; 
+}
+
+.ui-button-custom:hover {
+  color: var(--color-background) !important;
+}
+
+/* NEW: Active State for Button Press (Mobile Feedback) */
+.ui-button-custom:active {
+    transform: scale(0.98); 
+    opacity: 0.9;
+}
+
+/* Setup Command (Deep Pink) */
+.ui-button-setup {
+  border-color: var(--color-button-setup);
+  color: var(--color-button-setup);
+}
+.ui-button-setup:hover {
+  background-color: var(--color-button-setup);
+  box-shadow: 0 0 15px var(--color-glow-setup);
+}
+
+/* Navigate Command (Amber) */
+.ui-button-nav {
+  border-color: var(--color-button-nav);
+  color: var(--color-button-nav);
+}
+.ui-button-nav:hover {
+  background-color: var(--color-button-nav);
+  box-shadow: 0 0 15px var(--color-glow-nav);
+}
+
+/* Backup Command (Green) */
+.ui-button-backup {
+  border-color: var(--color-button-backup);
+  color: var(--color-button-backup);
+}
+.ui-button-backup:hover {
+  background-color: var(--color-button-backup);
+  box-shadow: 0 0 15px rgba(74, 222, 128, 0.5);
+}
+
+/* Delete Command (Red) */
+.ui-button-delete {
+  border-color: var(--color-button-delete);
+  color: var(--color-button-delete);
+}
+.ui-button-delete:hover {
+  background-color: var(--color-button-delete);
+  box-shadow: 0 0 15px rgba(248, 113, 113, 0.5);
+}
+
+/* Deploy Command (Purple) */
+.ui-button-deploy {
+  border-color: var(--color-button-deploy);
+  color: var(--color-button-deploy);
+}
+.ui-button-deploy:hover {
+  background-color: var(--color-button-deploy);
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+}
+
+/* Restore Command (Amber/Gold) (New) */
+.ui-button-restore {
+  border-color: var(--color-button-restore);
+  color: var(--color-button-restore);
+}
+.ui-button-restore:hover {
+  background-color: var(--color-button-restore);
+  box-shadow: 0 0 15px rgba(252, 211, 77, 0.5);
+}
+
+/* Log Copy Command (Pink) */
+.ui-button-pink {
+  border-color: var(--color-button-pink);
+  color: var(--color-button-pink);
+}
+.ui-button-pink:hover {
+  background-color: var(--color-button-pink);
+  box-shadow: 0 0 15px rgba(244, 114, 182, 0.5); 
+}
+
+/* NEW: Power Command (Crimson/Deep Red) */
+.ui-button-power {
+  border-color: var(--color-button-power);
+  color: var(--color-button-power);
+}
+.ui-button-power:hover {
+  background-color: var(--color-button-power);
+  box-shadow: 0 0 15px var(--color-glow-power);
+}
+
+/* NEW: Exit Termux Command (Light Gray/White) */
+.ui-button-exit {
+  border-color: var(--color-button-exit);
+  color: var(--color-button-exit);
+}
+.ui-button-exit:hover {
+  background-color: var(--color-button-exit);
+  box-shadow: 0 0 15px var(--color-glow-exit);
+}
+
+
+/* ---------------- SOCIAL BUTTONS & LABELS (Touch Optimization) ---------------- */
+.social-link-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: var(--color-text);
+  transition: all 0.2s ease; /* Faster transition */
+}
+
+.social-label {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-text-secondary); 
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+/* STATIC LABEL COLORS */
+.social-label.discord { color: #5865F2; }
+.social-label.telegram { color: #229ED9; }
+.social-label.youtube { color: #FF0000; }
+
+.social-link-wrapper:hover .social-label {
+  /* This ensures the label moves up on hover */
+  transform: translateY(-2px); 
+}
+
+.social-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid; /* Generic border style */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease; /* Faster transition */
+}
+
+/* STATIC BUTTON COLORS AND GLOW */
+.social-button.discord { 
+    background-color: #5865F2; 
+    border-color: #5865F2; 
+    color: #fff; 
+    /* Static glow is more intense */
+    box-shadow: 0 0 12px rgba(88, 101, 242, 0.8), 0 0 25px rgba(88, 101, 242, 0.4); 
+}
+.social-button.telegram { 
+    background-color: #229ED9; 
+    border-color: #229ED9; 
+    color: #fff; 
+    /* Static glow is more intense */
+    box-shadow: 0 0 12px rgba(34, 158, 217, 0.8), 0 0 25px rgba(34, 158, 217, 0.4); 
+}
+.social-button.youtube { 
+    background-color: #FF0000; 
+    border-color: #FF0000; 
+    color: #fff; 
+    /* Static glow is more intense, providing the requested 'red glow' */
+    box-shadow: 0 0 12px rgba(255, 0, 0, 0.8), 0 0 25px rgba(255, 0, 0, 0.4); 
+}
+
+/* Hover effect: Scale up and intensify existing glow */
+.social-button:hover {
+  transform: scale(1.15); /* Slightly bigger scale on hover */
+  /* Intense, color-matched glow on hover */
+  box-shadow: 0 0 25px currentColor, 0 0 40px currentColor; 
+}
+/* NEW: Active State for Social Button Press (Mobile Feedback) */
+.social-button:active {
+    transform: scale(1.05); 
+    opacity: 0.95;
+    box-shadow: 0 0 15px currentColor;
+}
+
+
+.emoji-icon {
+  font-size: 1.5rem;
+}
+
+/* ---------------- IMAGE CARD ---------------- */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0px); }
+}
+
+.image-card {
+  border: 1px solid var(--color-border);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background-color: rgba(14, 23, 46, 0.5);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; /* Faster transition */
+}
+
+/* Glow effect for images on wuwa-visuals.html */
+.image-card:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 15px var(--color-glow), 0 0 25px rgba(34, 211, 238, 0.2); 
+  border-color: var(--color-primary); 
+}
+
+/* NEW: Active state for Image Card on touch */
+.image-card:active {
+  transform: scale(1.01);
+  box-shadow: 0 0 10px var(--color-glow); 
+}
+
+
+.image-card-title {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  color: var(--color-primary);
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* ---------------- DIALOG & MODALS ---------------- */
+
+.dialog-scrim,
+.dialog-container,
+#zoom-modal { 
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+}
+
+.dialog-scrim.visible,
+.dialog-container.visible,
+#zoom-modal.visible { 
+  visibility: visible;
+  opacity: 1;
+}
+
+.dialog-scrim,
+#zoom-modal { 
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 99;
+}
+
+.dialog-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  width: calc(100% - 2rem);
+  max-width: 26rem;
+  z-index: 100;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 1.5rem;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 0 10px rgba(34, 211, 238, 0.1);
+  text-align: center;
+  border-radius: 0.75rem;
+}
+
+.dialog-container.visible {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.dialog-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.dialog-content {
+  color: var(--color-text-secondary);
+  margin-top: 0.5rem;
+}
+
+.dialog-actions {
+  margin-top: 1.5rem;
+}
+
+/* ---------------- NEW: MUSIC TOGGLE BUTTON ---------------- */
+.music-toggle-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 101; /* Must be above the dialog scrim */
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--color-surface);
+  border: 2px solid var(--color-primary);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.music-toggle-button:hover {
+  transform: scale(1.1);
+  background-color: var(--color-primary);
+  color: var(--color-background);
+  box-shadow: 0 0 15px var(--color-glow);
+}
+
+.music-toggle-button:active {
+  transform: scale(1.0);
+  opacity: 0.9;
+}

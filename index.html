@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wuthering Waves Config File Setup Toolkit</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://unpkg.com/lucide-icons@latest/dist/umd/lucide.min.js"></script>
+</head>
+
+<body>
+  <div class="background-wallpaper"></div>
+  <div class="background-overlay"></div>
+  <div class="fluid-layer"></div>
+  
+  <audio id="background-music" loop>
+    <source src="music.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="main-content">
+    <div class="max-w-5xl mx-auto">
+      <header class="text-center mb-12">
+        <h1 id="main-title" class="main-title glitch-text style-1">Wuthering Waves Config File Setup Toolkit</h1>
+        <div class="header-buttons">
+          <a href="https://www.youtube.com/watch?v=your_video_id" target="_blank" class="ui-button">Setup Video Guide</a>
+          <a href="wuwa-visuals.html" class="ui-button">View Visuals & News</a>
+        </div>
+      </header>
+
+      <section class="mb-12 ui-card ui-card-setup">
+        <h2 class="section-title">First-Time Setup (Android 14+ Fixes Included)</h2>
+        <div class="shizuku-note">
+          <div class="typing-text">
+            <strong>Important:</strong> Before you begin, make sure your Shizuku application is properly installed and running.
+          </div>
+        </div>
+        
+        <ol class="space-y-4 text-gray-300 mt-6">
+          <li class="list-item">
+            <p class="font-bold text-lg text-cyan-400 mb-1">Step 1: Install Required Apps</p>
+            <p>Install <span class="font-semibold">Termux</span> & <span class="font-semibold">Shizuku</span> from the Play Store.</p>
+          </li>
+
+          <li class="list-item">
+            <p class="font-bold text-lg text-cyan-400 mb-1">Step 2: Create P42 Folder</p>
+            <p>Create a folder named <code>P42</code> inside your device’s <code>Download</code> folder.</p>
+          </li>
+
+          <li class="list-item">
+            <p class="font-bold text-lg text-cyan-400 mb-1">Step 3: Grant Termux Storage Access</p>
+            <p>Open Termux & run the command below for permission:</p>
+            <code id="termux-access" class="code-block">termux-setup-storage</code>
+            <p class="card-description mt-2">🔹 This command allows Termux to read and write files from your phone’s internal storage. You must grant permission when prompted.</p>
+            <button onclick="copyToClipboard('termux-access')" class="ui-button-custom ui-button-setup mt-4">Copy Command</button>
+          </li>
+
+          <li class="list-item">
+            <p class="font-bold text-lg text-cyan-400 mb-1">Step 4: Place Files</p>
+            <p>Place <code>Engine.ini</code>, <code>DeviceProfiles.ini</code>, <code>rish</code>, and <code>rish_shizuku.dex</code> into the <code>P42</code> folder—get them from our DC/TG wuwa-tool-kit-file channel.</p>
+          </li>
+
+          <li class="list-item">
+            <p class="font-bold text-lg text-cyan-400 mb-1">Step 5: Setup rish for Android 14+</p>
+            <p>This is crucial for Android 14 users to avoid the 'writable dex' error. Run these commands sequentially:</p>
+            <code id="rish-setup-fix" class="code-block">cd ~/storage/downloads/P42 && \
+cp rish rish_shizuku.dex /data/data/com.termux/files/usr/bin/ && \
+chmod +x /data/data/com.termux/files/usr/bin/rish /data/data/com.termux/files/usr/bin/rish_shizuku.dex</code>
+            <p class="card-description mt-2">🔹 This copies the rish files to Termux's safe binary location and grants execute permission.</p>
+            <button onclick="copyToClipboard('rish-setup-fix')" class="ui-button-custom ui-button-setup mt-4">Copy Setup Fix</button>
+          </li>
+        </ol>
+      </section>
+
+      <section class="mb-12 space-y-8">
+        <h2 class="section-title">Deployment Commands (Run in Termux)</h2>
+
+        <div class="ui-card ui-card-nav">
+          <h3 class="card-title text-nav">Prerequisite: Navigate to Source Folder</h3>
+          <p class="card-description">Run this command **ONCE** every time you open a new Termux session. It changes directory to your <code>P42</code> folder where the files are stored.</p>
+          <code id="nav-command" class="code-block">cd ~/storage/downloads/P42</code>
+          <p class="card-description mt-2">🔹 This ensures all later commands run in the correct folder location.</p>
+          <button onclick="copyToClipboard('nav-command')" class="ui-button-custom ui-button-nav mt-4">Copy Navigation Command</button>
+        </div>
+
+        <div class="ui-card ui-card-backup">
+          <h3 class="card-title text-green-400">Step 1: Backup</h3>
+          <p class="card-description">This command copies your original game config files into the <code>P42</code> folder as backups.</p>
+          <code id="backup-command" class="code-block">rish -c "cp '/storage/emulated/0/Android/data/com.kurogame.wutheringwaves.global/files/UE4Game/Client/Client/Saved/Config/Android/DeviceProfiles.ini' '/storage/emulated/0/Download/P42/DeviceProfiles.ini.bak'" && rish -c "cp '/storage/emulated/0/Android/data/com.kurogame.wutheringwaves.global/files/UE4Game/Client/Client/Saved/Config/Android/Engine.ini' '/storage/emulated/0/Download/P42/Engine.ini.bak'"</code>
+          <p class="card-description mt-2">🔹 Use this to save your current settings before making changes. Always do this first!</p>
+          <button onclick="copyToClipboard('backup-command')" class="ui-button-custom ui-button-backup mt-4">Copy Backup Command</button>
+        </div>
+
+        <div class="ui-card ui-card-delete">
+          <h3 class="card-title text-red-400">Step 2: Delete Old Configs</h3>
+          <p class="card-description">Removes the existing config files from the game directory.</p>
+          <code id="delete-command" class="code-block">rish -c "cd '/storage/emulated/0/Android/data/com.kurogame.wutheringwaves.global/files/UE4Game/Client/Client/Saved/Config/Android' && rm -f DeviceProfiles.ini Engine.ini"</code>
+          <p class="card-description mt-2">🔹 This ensures the new optimized configs will be placed cleanly without leftover data.</p>
+          <button onclick="copyToClipboard('delete-command')" class="ui-button-custom ui-button-delete mt-4">Copy Delete Command</button>
+        </div>
+
+        <div class="ui-card ui-card-deploy">
+          <h3 class="card-title text-purple-400">Step 3: Deploy New Configs</h3>
+          <p class="card-description">Copies your optimized configuration files from the <code>P42</code> folder into the game directory and then removes them from <code>P42</code>.</p>
+          <code id="deploy-command" class="code-block">rish -c "cp /storage/emulated/0/Download/P42/DeviceProfiles.ini /storage/emulated/0/Android/data/com.kurogame.wutheringwaves.global/files/UE4Game/Client/Client/Saved/Config/Android/" && \
+rish -c "cp /storage/emulated/0/Download/P42/Engine.ini /storage/emulated/0/Android/data/com.kurogame.wutheringwaves.global/files/UE4Game/Client/Client/Saved/Config/Android/" && \
+rm DeviceProfiles.ini Engine.ini
+</code>
+          <p class="card-description mt-2">🔹 Executes file replacement, installing your latest graphics and performance tweaks also remove config file from P42 folder.</p>
+          <button onclick="copyToClipboard('deploy-command')" class="ui-button-custom ui-button-deploy mt-4">Copy Deploy Command</button>
+        </div>
+
+        <div class="ui-card ui-card-restore">
+          <h3 class="card-title text-amber-400">Step 4: Restore Backup</h3>
+          <p class="card-description">Restores your previous backup files if Don’t like new config .</p>
+          <code id="restore-command" class="code-block">for f in DeviceProfiles.ini Engine.ini; do cat "$f.bak" | rish -c "cat > '/storage/emulated/0/Android/data/com.kurogame.wutheringwaves.global/files/UE4Game/Client/Client/Saved/Config/Android/$f'"; done</code>
+          <p class="card-description mt-2">🔹 Reverts any changes, restoring your original files safely.</p>
+          <button onclick="copyToClipboard('restore-command')" class="ui-button-custom ui-button-restore mt-4">Copy Restore Command</button>
+        </div>
+
+        <div class="ui-card ui-card-log">
+          <h3 class="card-title text-pink-400">Utility: Copy Game Log (Client.log)</h3>
+          <p class="card-description">Copies the main game log file to your <code>P42</code> folder for debugging or troubleshooting.</p>
+          <code id="log-copy-command" class="code-block">rish -c "cp '/storage/emulated/0/Android/data/com.kurogame.wutheringwaves.global/files/UE4Game/Client/Client/Saved/Logs/Client.log' '/storage/emulated/0/Download/P42/Client.log'"</code>
+          <p class="card-description mt-2">🔹 This command is essential when reporting bugs or performance issues to get accurate data.</p>
+          <button onclick="copyToClipboard('log-copy-command')" class="ui-button-custom ui-button-pink mt-4">Copy Log Command</button>
+        </div>
+
+        <div class="ui-card ui-card-power">
+          <h3 class="card-title text-red-600">Power Command: Backup, Delete & Deploy</h3>
+          <p class="card-description">Executes **all three core steps** (Navigate, Backup, Delete, and Deploy New Configs) sequentially with one command. Saves time but requires files to be in the P42 folder.</p>
+          <code id="power-command" class="code-block">cd ~/storage/downloads/P42 && \
+rish -c "cp '/storage/emulated/0/Android/data/com.kurogame.wutheringwaves.global/files/UE4Game/Client/Client/Saved/Config/Android/DeviceProfiles.ini' '/storage/emulated/0/Download/P42/DeviceProfiles.ini.bak'" && \
+rish -c "cp '/storage/emulated/0/Android/data/com.kurogame.wutheringwaves.global/files/UE4Game/Client/Client/Saved/Config/Android/Engine.ini' '/storage/emulated/0/Download/P42/Engine.ini.bak'" && \
+rish -c "rm -f '/storage/emulated/0/Android/data/com.kurogame.wutheringwaves.global/files/UE4Game/Client/Client/Saved/Config/Android/DeviceProfiles.ini' '/storage/emulated/0/Android/data/com.kurogame.wutheringwaves.global/files/UE4Game/Client/Client/Saved/Config/Android/Engine.ini'" && \
+rish -c "cp /storage/emulated/0/Download/P42/DeviceProfiles.ini /storage/emulated/0/Android/data/com.kurogame.wutheringwaves.global/files/UE4Game/Client/Client/Saved/Config/Android/" && \
+rish -c "cp /storage/emulated/0/Download/P42/Engine.ini /storage/emulated/0/Android/data/com.kurogame.wutheringwaves.global/files/UE4Game/Client/Client/Saved/Config/Android/" && \
+rm DeviceProfiles.ini Engine.ini
+</code>
+          <p class="card-description mt-2">🔹 This command is the fastest way to apply your new settings.</p>
+          <button onclick="copyToClipboard('power-command')" class="ui-button-custom ui-button-power mt-4">Copy Power Command</button>
+        </div>
+
+
+        <div class="ui-card ui-card-exit">
+          <h3 class="card-title text-gray-200">Utility: Exit Termux</h3>
+          <p class="card-description">This command safely closes the current Termux session after your operations are complete.</p>
+          <code id="exit-command" class="code-block">exit</code>
+          <p class="card-description mt-2">🔹 Always exit Termux cleanly to ensure background processes are stopped.</p>
+          <button onclick="copyToClipboard('exit-command')" class="ui-button-custom ui-button-exit mt-4">Copy Exit Command</button>
+        </div>
+        
+      </section>
+
+      <section class="mb-12 ui-card ui-card-social text-center">
+        <h2 class="section-title">Community Hub</h2>
+        <p class="card-description mt-4">Join the Player42 community on your favorite platforms & Don’t miss out—sub our YT!.</p>
+        <div class="flex flex-wrap gap-6 justify-center mt-8">
+          
+          <a class="social-link-wrapper" href="#" onclick="goToSocialLink('discord')">
+            <button class="social-button discord">
+              <span class="emoji-icon">🅳🅲</span>
+            </button>
+            <span class="social-label discord">Discord</span>
+          </a>
+
+          <a class="social-link-wrapper" href="#" onclick="goToSocialLink('telegram')">
+            <button class="social-button telegram">
+              <span class="emoji-icon">🆃🅶</span>
+            </button>
+            <span class="social-label telegram">Telegram</span>
+          </a>
+
+          <a class="social-link-wrapper" href="#" onclick="goToSocialLink('youtube')">
+            <button class="social-button youtube">
+              <span class="emoji-icon">🆈🆃</span>
+            </button>
+            <span class="social-label youtube">YouTube</span>
+          </a>
+
+        </div>
+      </section>
+
+      <footer class="text-center text-gray-500 text-sm py-4">
+        <p>&copy; 2025 Player42 | Easy, Keyless Config Deployment</p>
+      </footer>
+    </div>
+  </div>
+
+  <div id="dialog-scrim" class="dialog-scrim" onclick="closeDialog()"></div>
+  <div id="dialog-container" class="dialog-container">
+    <div class="dialog-title">Command Copied</div>
+    <div class="dialog-content">Command copied to clipboard. Paste it into Termux.</div>
+    <div class="dialog-actions">
+      <button class="ui-button" onclick="closeDialog()">Close</button>
+    </div>
+  </div>
+  
+  <button id="music-toggle" class="music-toggle-button">
+    <i data-lucide="volume-2"></i>
+  </button>
+
+  <script src="script.js"></script>
+  <script>lucide.createIcons();</script>
+</body>
+</html>
