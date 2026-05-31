@@ -2,6 +2,11 @@
 
 Browser-based toolkit for generating and deploying Wuthering Waves UE config files for Android and PC. The project is static-only and is designed for GitHub Pages or any simple static file host.
 
+<!--
+SEO keywords:
+WuWa config, Wuthering Waves config, Wuthering Waves config file, WuWa config file setup tool, WuWa config generator, WuWa config builder, WuWa config maker, WuWa config for Android, Wuthering Waves Android config, Wuthering Waves mobile config, WuWa Android performance config, WuWa FPS boost, Wuthering Waves FPS boost, WuWa lag fix, Wuthering Waves lag fix, WuWa low end device config, Wuthering Waves low end phone config, WuWa performance preset, WuWa balanced preset, WuWa high preset, WuWa ultra preset, WuWa Engine.ini, Wuthering Waves Engine.ini, WuWa DeviceProfiles.ini, Wuthering Waves DeviceProfiles.ini, WuWa GameUserSettings.ini, Wuthering Waves GameUserSettings.ini, WuWa PC config, Wuthering Waves PC config, WuWa graphics config, Wuthering Waves graphics settings, WuWa UE config, Wuthering Waves UE4 config, WuWa Unreal Engine config, WuWa config download, WuWa optimization, Wuthering Waves optimization, WuWa stutter fix, Wuthering Waves stutter fix, WuWa 120 FPS, Wuthering Waves 120 FPS, WuWa config tool by Player42, P42 Toolkit
+-->
+
 ## Features
 
 | Feature | Description |
@@ -56,45 +61,42 @@ Browser-based toolkit for generating and deploying Wuthering Waves UE config fil
         └── ultra/
 ```
 
-## Quick Start
+## Live Page
 
-Open directly:
+Use the tool directly from the GitHub Pages site:
+
+https://berry7650.github.io/WuWa-Config-File-Setup-Tool/
+
+## How To Use
+
+This tool helps you build Wuthering Waves config files for your own device.
+
+1. Open the tool page.
+2. Drop or upload your `Client.log` file.
+3. Check the detected device and game information.
+4. Choose one of the suggested preset options.
+5. Click the generate button.
+6. Click download as ZIP.
+7. Extract the ZIP on your device.
+8. Place the generated config files in the correct game config folder.
+
+Before replacing any config files, make sure you back up your old configs first. The tool can also show useful information about possible game issues on your device, detected settings, performance limits, and other related details.
+
+Please do not forget to send feedback after testing. Your feedback helps improve the preset suggestions and config generation for more devices.
+
+## Client.log Locations
+
+Android:
 
 ```text
-index.html
+/storage/emulated/0/Android/data/com.kurogame.wutheringwaves.global/files/UE4Game/Client/Client/Saved/Logs/Client.log
 ```
 
-Recommended local server:
-
-```bash
-python3 -m http.server 8080
-```
-
-Then open:
+PC:
 
 ```text
-http://localhost:8080
+%LocalAppData%/Wuthering Waves/Saved/Logs/Client.log
 ```
-
-There is no build step, package manager, bundler, or backend.
-
-## Development Checks
-
-Run syntax checks after JavaScript changes:
-
-```bash
-node --check assets/js/config-gen.js
-node --check assets/js/p42brain.js
-node --check assets/js/script.js
-```
-
-For generator changes, manually test:
-
-- Android preset generation: Performance, Balanced, High, Ultra
-- PC preset generation
-- ZIP download
-- `Client.log` upload and detected-info display
-- Generated `Engine.ini`, `DeviceProfiles.ini`, and `GameUserSettings.ini`
 
 ## External Runtime Dependencies
 
@@ -107,57 +109,6 @@ The app is static, but some pages load third-party browser assets:
 | Google Fonts | `config-gen.html`, `bot.html` | UI typography |
 
 If those URLs are unavailable, core static pages may still open, but ZIP downloads, Firebase feedback, or fonts may not work as intended.
-
-## Android Usage
-
-Requirements:
-
-- Termux
-- Shizuku
-- `rish`
-- `rish_shizuku.dex`
-
-Typical setup:
-
-```bash
-termux-setup-storage
-cd ~/storage/downloads/P42
-cp rish rish_shizuku.dex /data/data/com.termux/files/usr/bin/
-chmod +x /data/data/com.termux/files/usr/bin/rish*
-```
-
-Common game config path:
-
-```text
-/storage/emulated/0/Android/data/com.kurogame.wutheringwaves.global/files/UE4Game/Client/Client/Saved/Config/Android/
-```
-
-Common log path:
-
-```text
-/storage/emulated/0/Android/data/com.kurogame.wutheringwaves.global/files/UE4Game/Client/Client/Saved/Logs/Client.log
-```
-
-The main page includes copy buttons for backup, delete, deploy, restore, and log-copy commands.
-
-## PC Usage
-
-Common config path:
-
-```text
-Wuthering Waves/Wuthering Waves Game/Client/Saved/Config/WindowsNoEditor/
-```
-
-Common log path:
-
-```text
-%LocalAppData%/Wuthering Waves/Saved/Logs/Client.log
-```
-
-PC output may include:
-
-- `Engine.ini`
-- optional `Input.ini` for mouse smoothing fixes
 
 ## Android Device Profile Generation
 
@@ -199,30 +150,6 @@ Local data lives in:
 
 Firebase logic in `assets/js/p42brain.js` is optional runtime behavior. The project does not require a backend server.
 
-## Important CVars
-
-| CVar | Purpose |
-| --- | --- |
-| `fx.KuroUseGPUParticles=0` | Mobile crash/stability fix. |
-| `r.HZBOcclusion=1` | Helps with cave/white artifact issues. |
-| `r.Kuro.AutoCoolEnable=1` | Enables thermal protection behavior. |
-| `r.Kuro.GraphicsQuality.ThirdPartyUltraEnable=1` | Unlocks Ultra option where supported. |
-| `r.Kuro.MaxFPS.ThirdParty120=1` | Unlocks higher FPS option where supported. |
-| `r.SceneColorFringeQuality=0` | Disables chromatic aberration. |
-| `r.VSync=0` | Reduces input latency. |
-
-Known forbidden or risky CVars are tracked in the generator and Smart Brain data. The generated configs should avoid entries known to be blocked or unstable.
-
-## Deployment
-
-This repository can be served directly through GitHub Pages:
-
-1. Push the repository to GitHub.
-2. Enable Pages for the branch/folder that contains `index.html`.
-3. Keep `.nojekyll` so GitHub Pages serves all static files as-is.
-
-No Python, Node, or server-side runtime is available on GitHub Pages. Keep all functionality browser-side.
-
 ## Security Notes
 
 - Do not commit API secrets, private logs, device identifiers, or personal data.
@@ -230,14 +157,19 @@ No Python, Node, or server-side runtime is available on GitHub Pages. Keep all f
 - Local session exports belong under `docs/session-logs/`, which is ignored by git.
 - Review generated config behavior before sharing presets widely.
 
+## Disclaimer
+
+This is a community-made tool and is not official Wuthering Waves software. Use generated configs at your own risk, and always back up your original files before replacing anything.
+
 ## License
 
 This project is released under the MIT License. See [LICENSE](LICENSE).
 
 ## Community
 
-- YouTube: `@Player42_g`
-- Discord: linked from `index.html`
-- Telegram: linked from `index.html`
+- Website: https://berry7650.github.io/WuWa-Config-File-Setup-Tool/
+- Discord: https://discord.gg/8fcpnQnUeq
+- Telegram: https://t.me/Yt_Player42/1
+- YouTube: https://www.youtube.com/@Player42_g
 
 Built for Wuthering Waves players by Player42.
