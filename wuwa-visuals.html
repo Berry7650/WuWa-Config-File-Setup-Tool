@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wuthering Waves Visual Gallery</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23020812'/%3E%3Ctext x='50' y='65' font-family='Arial' font-size='50' font-weight='bold' fill='%2300e5ff' text-anchor='middle'%3EP42%3C/text%3E%3C/svg%3E" />
+  <meta property="og:title" content="Wuthering Waves Visual Gallery" />
+  <meta property="og:description" content="Visual settings guide and gallery." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#22d3ee" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: 'Segoe UI', system-ui, sans-serif; 
+      background: #0a0a12; 
+      color: #e0e0e0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Animated Background */
+    .bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image: url('https://images.steamusercontent.com/ugc/2475371560323522726/3B4BF8A197C8E13B5FFADA70967A3347B8EF9469/');
+      background-size: cover;
+      background-position: center;
+      filter: blur(3px) brightness(0.6);
+      transform: scale(1.1);
+      z-index: 0;
+    }
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 0%, #0a0a12 80%);
+      z-index: 1;
+    }
+    .fluid {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(-45deg, rgba(0,212,255,0.08), rgba(168,85,247,0.08), rgba(255,107,157,0.05));
+      background-size: 400% 400%;
+      animation: fluid 20s ease infinite;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .glow {
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 300px;
+      background: radial-gradient(ellipse, rgba(0,212,255,0.15) 0%, transparent 70%);
+      animation: pulse 4s ease-in-out infinite;
+      z-index: 1;
+      pointer-events: none;
+    }
+    @keyframes fluid {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+      50% { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
+    }
+
+    /* Main Content */
+    .content {
+      position: relative;
+      z-index: 10;
+      padding: 0 1rem 4rem;
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 5rem 1rem 3rem;
+      position: relative;
+    }
+    .hero-fog {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 120%;
+      height: 180px;
+      background: linear-gradient(180deg, rgba(0,212,255,0.12) 0%, rgba(255,107,157,0.08) 40%, transparent 100%);
+      filter: blur(40px);
+      z-index: -1;
+    }
+    .hero h1 {
+      font-size: clamp(2.5rem, 8vw, 4rem);
+      font-weight: 800;
+      background: linear-gradient(to right, #ff0000 0%, #ff8800 15%, #ffff00 30%, #00ff00 45%, #00ffff 60%, #0088ff 75%, #ff00ff 90%, #ff0000 100%);
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -1px;
+      animation: rainbow 3s linear infinite;
+    }
+    @keyframes rainbow {
+      0% { background-position: 100% 0%; }
+      100% { background-position: -100% 0%; }
+    }
+    .hero p { 
+      color: #aaa; 
+      font-size: 1.2rem; 
+      margin-top: 0.75rem;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+    }
+
+    /* Section Title */
+    .section-title {
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 2rem 0 1.5rem;
+      position: relative;
+      display: inline-block;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, #00d4ff, #ff6b9d);
+      border-radius: 2px;
+    }
+
+    /* Gallery Grid */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    .gallery-item {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      cursor: pointer;
+      background: rgba(20, 20, 35, 0.9);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .gallery-item:hover {
+      transform: translateY(-12px) scale(1.02);
+      box-shadow: 0 30px 60px rgba(0,212,255,0.25), 0 0 30px rgba(0,212,255,0.1);
+      border-color: rgba(0,212,255,0.5);
+    }
+    .gallery-item img {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s;
+    }
+    .gallery-item:hover img { transform: scale(1.1); }
+    .gallery-item .overlay {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 2rem 1.5rem;
+      background: linear-gradient(transparent, rgba(0,0,0,0.95));
+      transform: translateY(10px);
+      transition: transform 0.3s;
+    }
+    .gallery-item:hover .overlay { transform: translateY(0); }
+    .gallery-item h3 { 
+      color: #fff; 
+      font-size: 1.4rem; 
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    .gallery-item .cat {
+      color: #00d4ff;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .gallery-item .view-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      width: 60px;
+      height: 60px;
+      background: rgba(0,212,255,0.2);
+      border: 2px solid rgba(0,212,255,0.5);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: #00d4ff;
+      transition: all 0.3s;
+    }
+    .gallery-item:hover .view-icon {
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    /* News Section */
+    .news {
+      max-width: 900px;
+      margin: 3rem auto;
+      padding: 0 1rem;
+    }
+
+    .news-card {
+      background: rgba(20, 20, 35, 0.85);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .news-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,212,255,0.5), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .news-card:hover {
+      border-color: rgba(0,212,255,0.3);
+      transform: translateX(5px);
+    }
+    .news-card:hover::before { opacity: 1; }
+    .news-card h3 {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      position: relative;
+    }
+    .news-card h3::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: -1rem;
+      transform: translateY(-50%);
+      width: calc(100% + 2rem);
+      height: 50px;
+      background: linear-gradient(90deg, rgba(0,212,255,0.08) 0%, rgba(255,107,157,0.05) 50%, transparent 100%);
+      filter: blur(20px);
+      z-index: -1;
+    }
+    .tag {
+      font-size: 0.7rem;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .tag.collab { background: linear-gradient(135deg, #ff6b9d, #ff8fab); color: #000; }
+    .tag.new { background: linear-gradient(135deg, #00d4ff, #38d9ff); color: #000; }
+    .tag.update { background: linear-gradient(135deg, #a855f7, #c084fc); color: #fff; }
+    .tag.event { background: linear-gradient(135deg, #ffd700, #ffed4a); color: #000; }
+    .news-card .title-text { color: #fff; font-size: 1.1rem; }
+    .news-card p { 
+      color: #999; 
+      line-height: 1.7; 
+      font-size: 0.95rem;
+    }
+    .news-card strong { color: #00d4ff; }
+    .news-card .date { 
+      color: #666; 
+      font-size: 0.85rem; 
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .news-card .date::before {
+      content: '📅';
+      font-size: 0.8rem;
+    }
+
+    /* Navigation */
+    .nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      padding: 2rem;
+      flex-wrap: wrap;
+    }
+    .nav a {
+      color: #888;
+      text-decoration: none;
+      font-size: 0.95rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .nav a::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0,212,255,0.1);
+      border-radius: 8px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .nav a:hover { color: #00d4ff; }
+    .nav a:hover::before { opacity: 1; }
+    .nav span { color: #444; }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      color: #555;
+      padding: 2rem;
+      font-size: 0.875rem;
+    }
+
+    /* ZOOM MODAL */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.97);
+      z-index: 99999;
+      flex-direction: column;
+      backdrop-filter: blur(10px);
+    }
+    .modal.open { display: flex; }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      background: rgba(0,0,0,0.8);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .modal-title { 
+      color: #fff; 
+      font-weight: 600; 
+      font-size: 1.1rem;
+      background: linear-gradient(90deg, #00d4ff, #ff6b9d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .btn-row { display: flex; gap: 0.5rem; }
+    .btn {
+      width: 48px; height: 48px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      color: #fff; 
+      font-size: 1.3rem;
+      cursor: pointer; 
+      transition: all 0.2s;
+    }
+    .btn:hover {
+      background: #00d4ff;
+      color: #000;
+      border-color: #00d4ff;
+      box-shadow: 0 0 20px rgba(0,212,255,0.4);
+    }
+    .btn.close:hover {
+      background: #ff4757;
+      border-color: #ff4757;
+      box-shadow: 0 0 20px rgba(255,71,87,0.4);
+    }
+
+    .modal-body {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      cursor: grab;
+      position: relative;
+    }
+    .modal-body:active { cursor: grabbing; }
+
+    .zoom-wrapper {
+      transform-origin: center;
+      transition: transform 0.15s;
+    }
+    .zoom-wrapper img {
+      max-height: 75vh;
+      max-width: 90vw;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 1rem;
+      background: rgba(0,0,0,0.8);
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .nav-btn {
+      width: 50px; height: 50px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+      color: #fff; 
+      font-size: 1.2rem;
+      cursor: pointer; 
+      transition: all 0.2s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: #00d4ff;
+      color: #000;
+      box-shadow: 0 0 20px rgba(0,212,255,0.4);
+    }
+    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .counter { color: #aaa; font-size: 1rem; }
+    .hint { color: #555; font-size: 0.8rem; }
+
+    @media (max-width: 600px) {
+      .gallery { grid-template-columns: 1fr; gap: 1rem; }
+      .gallery-item img { height: 220px; }
+      .hint { display: none; }
+      .news-card { padding: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="overlay"></div>
+  <div class="fluid"></div>
+  <div class="glow"></div>
+
+  <div class="content">
+    <div class="hero">
+      <div class="hero-fog"></div>
+      <h1>Visual Gallery</h1>
+      <p>Explore stunning artwork and scenes from Wuthering Waves</p>
+      <nav class="nav" style="margin-top: 1.5rem;">
+        <a href="index.html">← Back to Toolkit</a>
+        <span>|</span>
+        <a href="config-gen.html">Config Generator</a>
+        <span>|</span>
+        <a href="bot.html">Bot Assistant</a>
+      </nav>
+    </div>
+
+    <div class="gallery" id="gallery"></div>
+
+    <section class="news">
+      <h2 class="section-title">Latest News</h2>
+      <div id="news-container"></div>
+    </section>
+
+    <footer>
+      <p>© 2026 Player42 | Wuthering Waves Visual Gallery</p>
+    </footer>
+  </div>
+
+  <!-- ZOOM MODAL -->
+  <div class="modal" id="zoom-modal">
+    <div class="modal-header">
+      <span class="modal-title" id="zoom-title"></span>
+      <div class="btn-row">
+        <button class="btn" onclick="Zoom.in()" title="Zoom In">＋</button>
+        <button class="btn" onclick="Zoom.out()" title="Zoom Out">－</button>
+        <button class="btn" onclick="Zoom.reset()" title="Reset">↺</button>
+        <button class="btn close" onclick="Zoom.close()" title="Close">✕</button>
+      </div>
+    </div>
+    <div class="modal-body" id="zoom-viewport" onclick="if(event.target === this) Zoom.close()">
+      <div class="zoom-wrapper" id="zoom-wrapper" onclick="event.stopPropagation()">
+        <img id="zoom-image" src="" alt="">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="nav-btn" id="prev-btn" onclick="Zoom.prev()">◀</button>
+      <span class="counter" id="zoom-counter">1 / 1</span>
+      <button class="nav-btn" id="next-btn" onclick="Zoom.next()">▶</button>
+      <span class="hint">Scroll to zoom • Drag to pan • ← →</span>
+    </div>
+  </div>
+
+  <script>
+    const newsData = [
+      { tag: "collab", title: "Cyberpunk: Edgerunners", content: "Lucy & Rebecca join as 5-Star Resonators! Best part: <strong>Rebecca is FREE</strong> for all players. Coming June 2026.", date: "May 2026" },
+      { tag: "new", title: "Version 3.4 - Lucilla", content: "First 5-star Glacio Rectifier arrives! Ice-based support character joins the roster with unique gameplay mechanics.", date: "June 2026" },
+      { tag: "update", title: "Version 3.3 \"Reverbs From the End of Galaxies\"", content: "Major update featuring new story content, Resonators, and the Exostrider storyline reaching its epic conclusion.", date: "April 30, 2026" },
+      { tag: "event", title: "Yangyang SP - First SP Resonator", content: "History being made! Version 3.5 introduces the first SP character in WuWa history, revolutionizing the character system.", date: "Coming Q3 2026" }
+    ];
+
+    function renderNews() {
+      const container = document.getElementById('news-container');
+      container.innerHTML = newsData.map(item => `
+        <div class="news-card">
+          <h3>
+            <span class="tag ${item.tag}">${item.tag === 'event' ? 'SP' : item.tag.charAt(0).toUpperCase() + item.tag.slice(1)}</span>
+            <span class="title-text">${item.title}</span>
+          </h3>
+          <p>${item.content}</p>
+          <span class="date">${item.date}</span>
+        </div>
+      `).join('');
+    }
+
+    const images = [
+      { src: 'assets/images/visual-showcase/wallhaven-o5kp77.png', title: 'Baizhi', cat: ' researcher' },
+      { src: 'assets/images/visual-showcase/wallhaven-5gx5z3.png', title: 'The Shorekeeper', cat: 'guardian of the Black Shores' },
+      { src: 'assets/images/visual-showcase/wallhaven-2yrgvy.jpg', title: 'Yinlin', cat: 'Nature' }
+    ];
+
+    const Zoom = {
+      idx: 0,
+      scale: 1,
+      panX: 0,
+      panY: 0,
+      dragging: false,
+      startX: 0,
+      startY: 0,
+
+      init: function() {
+        this.renderGallery();
+        this.bind();
+        renderNews();
+      },
+
+      renderGallery: function() {
+        const el = document.getElementById('gallery');
+        let html = '';
+        images.forEach((img, i) => {
+          html += `<div class="gallery-item" onclick="Zoom.open(${i})">
+            <img src="${img.src}" alt="${img.title}">
+            <div class="overlay">
+              <h3>${img.title}</h3>
+              <span class="cat">${img.cat}</span>
+            </div>
+            <div class="view-icon">🔍</div>
+          </div>`;
+        });
+        el.innerHTML = html;
+      },
+
+      bind: function() {
+        const vp = document.getElementById('zoom-viewport');
+        
+        vp.addEventListener('wheel', e => {
+          if (!document.getElementById('zoom-modal').classList.contains('open')) return;
+          e.preventDefault();
+          this.scale += e.deltaY < 0 ? 0.2 : -0.2;
+          this.update();
+        });
+
+        vp.addEventListener('mousedown', e => {
+          if (this.scale <= 1) return;
+          this.dragging = true;
+          this.startX = e.clientX - this.panX;
+          this.startY = e.clientY - this.panY;
+        });
+
+        document.addEventListener('mousemove', e => {
+          if (!this.dragging) return;
+          this.panX = e.clientX - this.startX;
+          this.panY = e.clientY - this.startY;
+          this.update();
+        });
+
+        document.addEventListener('mouseup', () => this.dragging = false);
+
+        document.addEventListener('keydown', e => {
+          const modal = document.getElementById('zoom-modal');
+          if (!modal.classList.contains('open')) return;
+          if (e.key === 'Escape') this.close();
+          if (e.key === 'ArrowLeft') this.prev();
+          if (e.key === 'ArrowRight') this.next();
+          if (e.key === '+' || e.key === '=') this.in();
+          if (e.key === '-') this.out();
+          if (e.key === '0') this.reset();
+        });
+      },
+
+      open: function(i) {
+        this.idx = i;
+        this.scale = 1;
+        this.panX = 0;
+        this.panY = 0;
+        
+        const img = images[i];
+        document.getElementById('zoom-title').textContent = img.title + ' — ' + img.cat;
+        document.getElementById('zoom-image').src = img.src;
+        document.getElementById('zoom-counter').textContent = (i + 1) + ' / ' + images.length;
+        document.getElementById('prev-btn').disabled = i === 0;
+        document.getElementById('next-btn').disabled = i === images.length - 1;
+        
+        document.getElementById('zoom-modal').classList.add('open');
+        document.body.style.overflow = 'hidden';
+        this.update();
+      },
+
+      close: function() {
+        document.getElementById('zoom-modal').classList.remove('open');
+        document.body.style.overflow = '';
+      },
+
+      prev: function() { if (this.idx > 0) this.open(this.idx - 1); },
+      next: function() { if (this.idx < images.length - 1) this.open(this.idx + 1); },
+      in: function() { this.scale = Math.min(5, this.scale + 0.5); this.update(); },
+      out: function() { this.scale = Math.max(0.5, this.scale - 0.5); this.update(); },
+      reset: function() { this.scale = 1; this.panX = 0; this.panY = 0; this.update(); },
+
+      update: function() {
+        const wrap = document.getElementById('zoom-wrapper');
+        if (this.scale === 1) { this.panX = 0; this.panY = 0; }
+        wrap.style.transform = `translate(${this.panX}px, ${this.panY}px) scale(${this.scale})`;
+      }
+    };
+
+    Zoom.init();
+  </script>
+</body>
+</html>

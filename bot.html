@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WuWa Chat Bot Assistant · P42 Toolkit</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23020812'/%3E%3Ctext x='50' y='65' font-family='Arial' font-size='50' font-weight='bold' fill='%2300e5ff' text-anchor='middle'%3EP42%3C/text%3E%3C/svg%3E" />
+<meta property="og:title" content="WuWa Chat Bot Assistant · P42 Toolkit" />
+<meta property="og:description" content="Offline assistant for UE4 commands and WuWa fixes." />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#22d3ee" />
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── DESIGN TOKENS ── */
+:root {
+  --cy: #00e5ff;
+  --cy2: #00b8d4;
+  --mg: #d500f9;
+  --mg2: #aa00ff;
+  --gd: #ffd600;
+  --gr: #00e676;
+  --rd: #ff5252;
+  --bg0: #020812;
+  --bg1: #040f1e;
+  --bg2: #071529;
+  --bg3: #0a1c35;
+  --fg: #cdd9e5;
+  --fg2: #8899aa;
+  --card: rgba(7,21,41,.92);
+  --border: rgba(0,229,255,.12);
+  --border2: rgba(0,229,255,.25);
+  --glow: 0 0 20px rgba(0,229,255,.15);
+  --H: 'Orbitron', monospace;
+  --B: 'Rajdhani', sans-serif;
+  --C: 'JetBrains Mono', monospace;
+}
+
+/* ── RESET & BASE ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body {
+  min-height: 100vh;
+  background: var(--bg0);
+  color: var(--fg);
+  font-family: var(--B);
+  font-size: 15px;
+  overflow-x: hidden;
+}
+
+/* ── BACKGROUND ── */
+.bg-scene {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+}
+.bg-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,229,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.bg-glow1 {
+  position: absolute; width: 600px; height: 600px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,229,255,.06) 0%, transparent 70%);
+  top: -200px; right: -100px;
+  animation: breathe 8s ease-in-out infinite;
+}
+.bg-glow2 {
+  position: absolute; width: 400px; height: 400px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(213,0,249,.05) 0%, transparent 70%);
+  bottom: 50px; left: -100px;
+  animation: breathe 11s ease-in-out infinite reverse;
+}
+.bg-scanlines {
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 2px,
+    rgba(0,0,0,.08) 2px, rgba(0,0,0,.08) 4px
+  );
+  pointer-events: none;
+}
+@keyframes breathe { 0%,100%{opacity:.6;transform:scale(1);}50%{opacity:1;transform:scale(1.1);} }
+
+/* ── LAYOUT ── */
+.wrapper {
+  position: relative; z-index: 1;
+  max-width: 900px; margin: 0 auto;
+  padding: 20px 16px 0;
+  display: flex; flex-direction: column;
+  height: 100vh; overflow: hidden;
+}
+
+/* ── TOP NAV ── */
+.top-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.nav-brand {
+  display: flex; align-items: center; gap: 10px;
+}
+.nav-logo {
+  width: 32px; height: 32px; border-radius: 6px;
+  background: linear-gradient(135deg, rgba(0,229,255,.2), rgba(213,0,249,.2));
+  border: 1px solid var(--border2);
+  display: grid; place-items: center;
+  font-size: 14px;
+}
+.nav-title {
+  font-family: var(--H); font-size: .75rem; letter-spacing: .15em;
+  color: var(--cy);
+}
+.nav-sub { font-family: var(--C); font-size: .6rem; color: var(--fg2); }
+.nav-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.nav-btn {
+  padding: 5px 12px; border-radius: 4px; border: 1px solid var(--border2);
+  background: transparent; color: var(--cy); font-family: var(--H);
+  font-size: .58rem; letter-spacing: .1em; cursor: pointer; text-decoration: none;
+  transition: all .2s; display: inline-flex; align-items: center; gap: 5px;
+}
+.nav-btn:hover { background: rgba(0,229,255,.08); border-color: var(--cy); box-shadow: var(--glow); }
+.nav-btn.mg { border-color: rgba(213,0,249,.35); color: var(--mg); }
+.nav-btn.mg:hover { background: rgba(213,0,249,.08); border-color: var(--mg); }
+.nav-btn.vi { border-color: rgba(176,96,255,.35); color: var(--mg); }
+.nav-btn.vi:hover { background: rgba(176,96,255,.08); border-color: var(--mg); }
+.status-dot {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 4px;
+  border: 1px solid rgba(0,230,118,.3); background: rgba(0,230,118,.05);
+  font-family: var(--C); font-size: .6rem; color: var(--gr);
+}
+.status-dot::before {
+  content:''; width: 6px; height: 6px; border-radius: 50%; background: var(--gr);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot { 0%,100%{opacity:1;} 50%{opacity:.4;} }
+
+/* ── KB PANEL ── */
+.kb-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 12px 0 10px;
+  flex-shrink: 0;
+}
+.kb-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 8px; gap: 8px; flex-wrap: wrap;
+}
+.kb-label { font-family: var(--H); font-size: .58rem; letter-spacing: .15em; color: var(--cy); }
+.kb-meta { display: flex; gap: 8px; align-items: center; }
+.kb-count { font-family: var(--C); font-size: .6rem; color: var(--fg2); }
+.kb-cats {
+  display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px;
+}
+.kb-cat {
+  padding: 2px 8px; border-radius: 3px; font-family: var(--C); font-size: .58rem;
+  border: 1px solid; cursor: default;
+}
+.cat-ue4    { border-color: rgba(0,229,255,.3);  color: rgba(0,229,255,.8);  background: rgba(0,229,255,.05); }
+.cat-kuro   { border-color: rgba(213,0,249,.3);  color: rgba(213,0,249,.8);  background: rgba(213,0,249,.05); }
+.cat-android{ border-color: rgba(0,230,118,.3);  color: rgba(0,230,118,.8);  background: rgba(0,230,118,.05); }
+.cat-pc     { border-color: rgba(255,214,0,.3);  color: rgba(255,214,0,.8);  background: rgba(255,214,0,.05); }
+.cat-fix    { border-color: rgba(255,82,82,.3);  color: rgba(255,82,82,.8);  background: rgba(255,82,82,.05); }
+.cat-user   { border-color: rgba(0,230,118,.4);  color: var(--gr);           background: rgba(0,230,118,.06); }
+
+.kb-drop {
+  border: 1px dashed rgba(0,229,255,.22); border-radius: 6px;
+  padding: 9px 14px; cursor: pointer; transition: all .2s;
+  position: relative; text-align: center;
+}
+.kb-drop:hover { border-color: var(--cy); background: rgba(0,229,255,.03); }
+.kb-drop input { position: absolute; inset:0; opacity:0; cursor:pointer; }
+.kb-drop-text { font-family: var(--C); font-size: .65rem; color: var(--fg2); }
+.kb-loaded { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+.kb-file-badge {
+  padding: 2px 9px; border-radius: 3px; background: rgba(0,230,118,.08);
+  border: 1px solid rgba(0,230,118,.2); font-family: var(--C); font-size: .62rem;
+  color: var(--gr); display: flex; align-items: center; gap: 5px;
+}
+.kb-file-rm { cursor: pointer; color: var(--rd); margin-left: 2px; }
+
+/* ── CHAT AREA ── */
+.chat-card {
+  flex: 1; min-height: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-messages {
+  flex: 1; overflow-y: auto;
+  padding: 18px 16px;
+  display: flex; flex-direction: column; gap: 16px;
+  scroll-behavior: smooth;
+}
+.chat-messages::-webkit-scrollbar { width: 3px; }
+.chat-messages::-webkit-scrollbar-track { background: transparent; }
+.chat-messages::-webkit-scrollbar-thumb { background: rgba(0,229,255,.15); border-radius: 2px; }
+
+/* ── MESSAGES ── */
+.msg { display: flex; flex-direction: column; gap: 4px; max-width: 87%; animation: fadeUp .25s ease; }
+.msg.user { align-self: flex-end; align-items: flex-end; }
+.msg.bot  { align-self: flex-start; align-items: flex-start; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+.msg-meta {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--C); font-size: .58rem; color: var(--fg2);
+}
+.msg-author { font-weight: 500; }
+.msg.user .msg-author { color: var(--cy); }
+.msg.bot  .msg-author { color: var(--mg); }
+
+.bubble {
+  padding: 12px 15px; border-radius: 10px;
+  font-size: .88rem; line-height: 1.75; font-family: var(--B); font-weight: 400;
+}
+.msg.user .bubble {
+  background: rgba(0,229,255,.07);
+  border: 1px solid rgba(0,229,255,.2);
+  border-radius: 10px 10px 3px 10px;
+  color: var(--fg);
+}
+.msg.bot .bubble {
+  background: rgba(4,15,30,.85);
+  border: 1px solid rgba(213,0,249,.18);
+  border-radius: 10px 10px 10px 3px;
+  color: var(--fg);
+  backdrop-filter: blur(8px);
+}
+
+/* typing animation */
+.typing-dots { display: flex; gap: 5px; padding: 4px 2px; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--mg); }
+.dot:nth-child(1) { animation: blink 1.2s .0s infinite; }
+.dot:nth-child(2) { animation: blink 1.2s .2s infinite; }
+.dot:nth-child(3) { animation: blink 1.2s .4s infinite; }
+@keyframes blink { 0%,100%{opacity:.3;transform:scale(.8);}50%{opacity:1;transform:scale(1.1);} }
+
+/* source tag */
+.src-tag {
+  display: inline-block; padding: 1px 6px; border-radius: 3px;
+  font-family: var(--C); font-size: .58rem;
+  background: rgba(213,0,249,.08); border: 1px solid rgba(213,0,249,.2); color: var(--mg);
+}
+
+/* ── CODE BLOCKS ── */
+.code-wrap {
+  margin: 8px 0; border-radius: 6px;
+  background: rgba(2,8,18,.9); border: 1px solid rgba(0,229,255,.12); overflow: hidden;
+}
+.code-header {
+  padding: 4px 10px; background: rgba(0,229,255,.05);
+  border-bottom: 1px solid rgba(0,229,255,.08);
+  font-family: var(--C); font-size: .58rem; color: rgba(0,229,255,.5);
+}
+.code-line {
+  display: flex; align-items: baseline; gap: 0;
+  padding: 3px 10px; font-family: var(--C); font-size: .75rem; line-height: 1.6;
+  border-bottom: 1px solid rgba(255,255,255,.02);
+}
+.code-line:last-child { border-bottom: none; }
+.code-key { color: var(--cy); }
+.code-eq { color: #475569; }
+.code-val { color: var(--gd); }
+.code-comment { color: #2a4a6a; font-size: .68rem; margin-left: 8px; }
+.code-plain { color: #94a3b8; padding: 4px 10px; font-family: var(--C); font-size: .75rem; }
+
+/* ── QUICK BTNS ── */
+.quick-zone {
+  padding: 10px 14px 0;
+  border-top: 1px solid rgba(0,229,255,.06);
+  flex-shrink: 0;
+}
+.quick-label { font-family: var(--C); font-size: .57rem; color: rgba(0,229,255,.35); letter-spacing: .1em; margin-bottom: 6px; }
+.quick-btns { display: flex; flex-wrap: wrap; gap: 5px; }
+.qbtn {
+  padding: 5px 11px; border-radius: 4px; cursor: pointer;
+  font-family: var(--B); font-size: .75rem; font-weight: 500;
+  border: 1px solid rgba(0,229,255,.18); color: rgba(0,229,255,.65);
+  background: transparent; transition: all .18s; white-space: nowrap;
+}
+.qbtn:hover { border-color: var(--cy); color: var(--cy); background: rgba(0,229,255,.06); box-shadow: var(--glow); }
+
+/* ── INPUT AREA ── */
+.input-area {
+  padding: 12px 14px;
+  border-top: 1px solid rgba(0,229,255,.09);
+  background: rgba(2,8,18,.6);
+  backdrop-filter: blur(10px);
+  display: flex; gap: 10px; align-items: flex-end;
+  flex-shrink: 0;
+}
+.chat-input {
+  flex: 1; background: rgba(2,6,23,.8);
+  border: 1px solid rgba(0,229,255,.18); border-radius: 6px;
+  padding: 10px 14px; color: var(--fg); font-size: .88rem; font-family: var(--B);
+  resize: none; outline: none; min-height: 42px; max-height: 120px;
+  line-height: 1.5; transition: border-color .2s;
+}
+.chat-input::placeholder { color: rgba(136,153,170,.4); }
+.chat-input:focus { border-color: var(--cy); box-shadow: 0 0 14px rgba(0,229,255,.08); }
+.send-btn {
+  padding: 10px 20px; border-radius: 6px; cursor: pointer;
+  font-family: var(--H); font-size: .6rem; letter-spacing: .12em;
+  border: 1px solid rgba(0,229,255,.4); color: var(--cy);
+  background: linear-gradient(135deg, rgba(0,229,255,.1), rgba(0,229,255,.02));
+  transition: all .2s; flex-shrink: 0; white-space: nowrap;
+}
+.send-btn:hover { background: rgba(0,229,255,.15); border-color: var(--cy); box-shadow: var(--glow); }
+.send-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+/* ── FOOTER ── */
+.footer {
+  text-align: center; padding: 8px 0;
+  font-family: var(--C); font-size: .58rem; color: rgba(136,153,170,.3);
+  flex-shrink: 0;
+}
+
+/* ── INLINE CODE ── */
+code.ic {
+  font-family: var(--C); font-size: .78em; padding: 1px 5px; border-radius: 3px;
+  background: rgba(0,229,255,.08); border: 1px solid rgba(0,229,255,.12); color: var(--cy);
+}
+
+/* response sections */
+.resp-section { margin-bottom: 10px; }
+.resp-section:last-child { margin-bottom: 0; }
+.resp-sub {
+  font-family: var(--H); font-size: .58rem; letter-spacing: .12em; color: var(--cy);
+  margin-bottom: 6px; opacity: .7;
+}
+.resp-list { list-style: none; display: flex; flex-direction: column; gap: 3px; }
+.resp-list li::before { content: '›'; color: var(--cy); margin-right: 7px; opacity: .6; }
+
+/* category chip */
+.resp-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 3px; font-family: var(--C);
+  font-size: .58rem; margin-right: 5px; margin-bottom: 2px;
+}
+.chip-ue4    { background: rgba(0,229,255,.06);  border: 1px solid rgba(0,229,255,.2);  color: var(--cy); }
+.chip-kuro   { background: rgba(213,0,249,.06);  border: 1px solid rgba(213,0,249,.2);  color: var(--mg); }
+.chip-android{ background: rgba(0,230,118,.06);  border: 1px solid rgba(0,230,118,.2);  color: var(--gr); }
+.chip-pc     { background: rgba(255,214,0,.06);  border: 1px solid rgba(255,214,0,.2);  color: var(--gd); }
+.chip-fix    { background: rgba(255,82,82,.06);  border: 1px solid rgba(255,82,82,.2);  color: var(--rd); }
+.chip-preset { background: rgba(255,214,0,.05);  border: 1px solid rgba(255,214,0,.18); color: var(--gd); }
+
+@media (max-width:640px) {
+  .wrapper { padding: 12px 10px 0; }
+  .kb-panel { padding: 10px 12px; }
+  .bubble { font-size: .82rem; padding: 10px 12px; }
+}
+</style>
+<!-- P42Brain Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+  // Graceful fallback if firebase-learn.js is not present (gitignored for GitHub Pages)
+  window.P42Brain = window.P42Brain || null;
+</script>
+<script src="firebase-learn.js" onerror="console.warn('firebase-learn.js not found - using offline mode only')"></script>
+</head>
+<body>
+<div class="bg-scene">
+  <div class="bg-grid"></div>
+  <div class="bg-glow1"></div>
+  <div class="bg-glow2"></div>
+  <div class="bg-scanlines"></div>
+</div>
+
+<div class="wrapper">
+
+  <!-- TOP NAV -->
+  <nav class="top-nav">
+    <div class="nav-brand">
+      <div class="nav-logo">⚡</div>
+      <div>
+        <div class="nav-title">WuWa Bot Assistant</div>
+        <div class="nav-sub">P42 Toolkit · Offline KB Engine</div>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <a href="index.html" class="nav-btn">← Toolkit</a>
+      <a href="config-gen.html" class="nav-btn mg">⚙ Config Gen</a>
+      <a href="wuwa-visuals.html" class="nav-btn vi">🖼 Visuals</a>
+      <div class="status-dot" id="status-badge">KB LOADED</div>
+    </div>
+  </nav>
+
+  <!-- KB PANEL -->
+  <div class="kb-panel">
+    <div class="kb-header">
+      <div class="kb-label">📚 KNOWLEDGE BASE</div>
+      <div class="kb-meta">
+        <span class="kb-count" id="kb-count">8 built-in modules</span>
+      </div>
+    </div>
+    <div class="kb-cats" id="kb-cats">
+      <span class="kb-cat cat-ue4">UE4 Commands</span>
+      <span class="kb-cat cat-kuro">Kuro/WuWa</span>
+      <span class="kb-cat cat-android">Android Setup</span>
+      <span class="kb-cat cat-pc">PC Optimization</span>
+      <span class="kb-cat cat-fix">Bug Fixes</span>
+      <span class="kb-cat cat-ue4">Render CVars</span>
+      <span class="kb-cat cat-kuro">Presets</span>
+      <span class="kb-cat cat-android">Termux/Shizuku</span>
+    </div>
+    <div class="kb-drop" id="data-drop">
+      <input type="file" id="data-file-input" accept=".txt,.ini,.log,.cfg" multiple>
+      <div class="kb-drop-text">📂 Drop <strong>.txt / .ini / .log / .cfg</strong> files to expand knowledge · Client.log · custom configs · notes</div>
+    </div>
+    <div class="kb-loaded" id="loaded-files"></div>
+  </div>
+
+  <!-- CHAT CARD -->
+  <div class="chat-card">
+    <div class="chat-messages" id="chat-messages"></div>
+
+    <!-- QUICK QUESTIONS -->
+    <div class="quick-zone">
+      <div class="quick-label">QUICK QUESTIONS</div>
+      <div class="quick-btns">
+        <button class="qbtn" onclick="askQuick('How to install configs on Android with Shizuku?')">Android install</button>
+        <button class="qbtn" onclick="askQuick('How to fix white spots and artifacts in caves?')">Fix cave artifacts</button>
+        <button class="qbtn" onclick="askQuick('How to unlock 120fps on Android?')">Unlock 120 FPS</button>
+        <button class="qbtn" onclick="askQuick('What does r.HZBOcclusion do?')">r.HZBOcclusion</button>
+        <button class="qbtn" onclick="askQuick('Best performance config preset for PC?')">PC performance</button>
+        <button class="qbtn" onclick="askQuick('How to fix NPC pop-in and disappearing?')">Fix NPC pop-in</button>
+        <button class="qbtn" onclick="askQuick('What are good launch arguments for WuWa?')">Launch args</button>
+        <button class="qbtn" onclick="askQuick('How to fix animation stuttering?')">Fix anim stutter</button>
+        <button class="qbtn" onclick="askQuick('How to reduce input lag and high latency?')">Reduce input lag</button>
+        <button class="qbtn" onclick="askQuick('How to fix blurry textures on PC?')">Fix blurry textures</button>
+        <button class="qbtn" onclick="askQuick('What is r.ScreenPercentage and how to use it?')">r.ScreenPercentage</button>
+        <button class="qbtn" onclick="askQuick('How to fix game crashing with Vulkan?')">Vulkan crash fix</button>
+      </div>
+    </div>
+
+    <!-- INPUT -->
+    <div class="input-area">
+      <textarea class="chat-input" id="chat-input" rows="1"
+        placeholder="Ask about configs, UE4 CVars, Android setup, fixes..."
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"></textarea>
+      <button class="send-btn" id="send-btn" onclick="sendMessage()">SEND ▶</button>
+    </div>
+  </div>
+
+  <div class="footer">P42 Toolkit · Offline Bot · Sources: AlteriaX/WuWa-Configs · framedsc.com · Epic UE4 Docs · Kuro Game</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// KNOWLEDGE BASE — EXPANDED
+// ═══════════════════════════════════════════════════════════════
+const KB = {
+
+ue4_rendering: `
+UE4 RENDERING (2025/2026 Updated)
+r.ScreenPercentage=100 - Internal resolution scale. 100=native, 50=half (perf), 85-90=balanced.
+r.SecondaryScreenPercentage.GameViewport=100 - Game viewport resolution.
+r.MobileContentScaleFactor=0.0 - Mobile native resolution (best). 1.0=standard.
+r.PostProcessAAQuality=6 - Anti-aliasing (0=off, 6=max TAA).
+r.TemporalAA.Upsampling=1 - TAA upsampling.
+r.TemporalAACurrentFrameWeight=0.35 - TAA frame weight (smooth)
+r.TemporalAASamples=8 - TAA samples (8-16)
+r.Tonemapper.Quality=4 - Tonemapper (1-4).
+r.SceneColorFringeQuality=0 - Chromatic aberration off.
+r.DepthOfFieldQuality=0 - DOF off (perf boost).
+r.MotionBlurQuality=0 - Motion blur off.
+r.BloomQuality=3 - Bloom medium (0=off, 5=max).
+r.AmbientOcclusionLevels=0 - Disable AO (perf).
+r.SSR.Quality=2 - Screen Space Reflections (0=off, 4=max).
+r.SSR.MaxRoughness=0.8 - SSR max roughness.
+r.ReflectionCaptureResolution=256 - Reflection cubemap (128-512).
+r.Fog=1 - Enable fog (low cost).
+r.VolumetricFog=0 - Disable volumetric fog (heavy).
+r.VSync=0 - Disable VSync (lower lag).
+r.VSync=1 - Enable VSync (no tear).
+r.LightShaftQuality=0 - God rays off.
+r.LightShaftDownSampleFactor=1 - Light shaft quality.
+r.Mobile.GTAO.Quality=2 - Mobile GTAO (0-3).
+r.Mobile.TonemapperFilm=1 - Mobile film tonemapper.
+r.Mobile.HDR=1 - Mobile HDR.
+r.GTSyncType=1 - Sync game/RHI thread.
+r.D3D12.UseAllowTearing=1 - Allow tearing (DX12).
+r.GPUFlush=1 - Flush GPU more frequently.
+r.TemporalAccumulation=1 - Smoother frames.
+`,
+
+ue4_textures: `
+UE4 TEXTURES & LOD
+r.MipMapLODBias=-1 - Sharper textures (-3 to +3, negative=sharper).
+r.MaxAnisotropy=16 - Anisotropic filtering (0=off, 16=max).
+r.Streaming.PoolSize=2048 - Texture pool size in MB.
+r.DetailMode=2 - Object detail (0=low, 1=med, 2=high).
+r.ViewDistanceScale=3 - View distance multiplier.
+foliage.LODDistanceScale=3 - Foliage LOD distance.
+r.SkeletalMeshLODBias=0 - Skeletal mesh LOD (0=max, 2=low).
+r.Streaming.MinBoost=4.0 - Streaming boost.
+`,
+
+ue4_shadows: `
+UE4 SHADOWS
+r.ShadowQuality=5 - Shadow quality (0=off, 5=max).
+sg.ShadowQuality=3 - Scalability group shadows.
+r.Shadow.DistanceScale=3 - Shadow draw distance.
+r.Shadow.MaxCSMResolution=2048 - CSM resolution (512-2048).
+r.Shadow.CSMDepthBias=10 - CSM depth bias.
+r.CapsuleShadows=1 - Character capsule shadows.
+r.ContactShadows=1 - Contact shadows.
+`,
+
+ue4_perf: `
+UE4 PERFORMANCE
+r.HZBOcclusion=1 - Fix white artifacts in caves.
+a.URO.ForceAnimRate=1 - Fix animation stutter.
+a.URO.Enable=0 - Disable animation optimization.
+r.RenderTargetPoolMin=400 - Larger render pool.
+r.Vulkan.RobustBufferAccess=1 - Fix Vulkan crash.
+t.MaxFPS=0 - Uncap FPS.
+t.MaxFPS=120 - Cap at 120.
+stat fps - Show FPS counter.
+`,
+
+wuwa_kuro: `
+WUWA KURO SPECIFIC 2026 (v3.3/v3.4)
+r.Kuro.MaxFPS.ThirdParty120=1 - Unlock 120 FPS (Android/PC)
+r.Kuro.MaxFPS.ThirdParty60=1 - Allow 3rd party FPS control
+r.Kuro.GraphicsQuality.ThirdPartyUltraEnable=1 - Unlock Ultra settings
+r.Kuro.AutoCoolEnable=1 - Thermal throttle protection
+r.Kuro.AutoCoolEnable=0 - Disable (hot device)
+r.Kuro.NpcDisappearDistance=20000 - Fix NPC pop-in
+r.Kuro.NpcDisappearDistance=30000 - More NPC draw
+r.KuroTonemapping=3 - Best tonemapper (recommended)
+r.KuroVolumeCloudEnable=0 - Disable volumetric clouds (perf)
+r.KuroVolumeCloudEnable=1 - Enable (visual)
+r.KuroMaterialQualityLevel=2 - Material quality (0-2)
+r.KuroMaterialQualityLevel=0 - Low (perf)
+r.Kuro.BrightnessFactor=1.0 - Brightness multiplier
+r.Kuro.UIScale=1.0 - UI scaling
+r.Kuro.MotionBlurEnable=0 - Disable motion blur
+r.Kuro.DepthOfFieldEnable=0 - Disable DOF
+r.Kuro.KuroBloomStreak=0 - Disable bloom streak
+r.Kuro.KuroEnableFFTBloom=1 - Better FFT bloom
+r.Kuro.InteractionEffect.UseCppWaterEffect=1 - Better water effect
+r.Kuro.Foliage.EnableFoliageCulling=1 - Enable foliage culling
+r.LandscapeLOD0ScreenSizeScale=0.5 - Better landscape LOD
+
+3.3 NEW CVARS:
+r.Streaming.UsingNewKuroStreaming=1 - New Kuro streaming (3.3)
+r.Streaming.MinBoost=4.0 - Streaming boost priority
+r.Streaming.PoolSize=600 - Streaming pool size
+m.LowMemoryDeviceThreshold=5800 - Low memory threshold (6GB)
+bEnableGSR=1 - Snapdragon Super Resolution
+r.ParallelFrustumCull=1 - Parallel frustum culling
+r.ParallelOcclusionCull=1 - Parallel occlusion culling
+r.ScreenSizeCullRatioFactor=3 - Screen cull ratio
+r.StaticMeshLODDistanceScale=0.5 - Static mesh LOD
+r.KuroVolumetricLight.DownSampleFactor=1 - Volumetric light
+r.Upscale.Quality=3 - Upscale quality (FSR/DLSS)
+r.VRS.EnableMaterial=false - Disable VRS material
+r.VRS.EnableMesh=false - Disable VRS mesh
+
+MOBILE:
+r.Mobile.DeviceEvaluation=3 - Force flagship tier
+r.Mobile.DeviceEvaluation=2 - Mid tier
+r.MobileContentScaleFactor=0.0 - Native resolution
+r.MobileContentScaleFactor=1.0 - Standard resolution
+r.Mobile.WaterSSR=1 - Mobile water SSR
+r.Mobile.WaterSSRStep=64 - Water SSR quality
+r.Mobile.KuroPostprocess=1 - Character rim light
+r.Mobile.OutlineScale=1.2 - Character outline
+r.Mobile.TonemapperFilm=1 - Film tonemapper
+r.Mobile.HDR=1 - Mobile HDR
+
+WORLD STREAMING:
+wp.Runtime.KuroRuntimeStreamingRangeOverallScale=3.0 - World load range
+wp.Runtime.PlannedLoadingRangeScale=3.0 - Planned load
+wp.Runtime.SoraGridBlackListHeight=20000 - Grid height
+
+FOLIAGE:
+r.Kuro.Foliage.GrassCullDistanceMax=30000 - Grass distance PC
+r.Kuro.Foliage.GrassCullDistanceMax=15000 - Grass distance mobile
+r.Kuro.Foliage.MobileNearCullDistanceMax=6000
+r.Kuro.Foliage.MobileMiddleCullDistanceMax=10000
+
+NETWORK:
+LGUIBlurTexture.save=0 - Fix network lag
+
+NVIDIA REFLEX:
+t.Streamline.Reflex.Enable=1 - Enable Reflex
+t.Streamline.Reflex.Mode=1 - Reflex mode 1
+`,
+
+android_setup: `
+ANDROID SETUP
+Tools: Termux (F-Droid), Shizuku, rish, rish_shizuku.dex
+P42 folder: /storage/emulated/0/Download/P42/
+
+SETUP:
+1. Install Termux (F-Droid), Shizuku
+2. termux-setup-storage (grant permissions)
+3. Put Engine.ini, DeviceProfiles.ini, rish, rish_shizuku.dex in P42 folder
+
+ANDROID 14+ FIX:
+cp rish rish_shizuku.dex /data/data/com.termux/files/usr/bin/
+chmod +x /data/data/com.termux/files/usr/bin/rish*
+
+COMMANDS:
+cd ~/storage/downloads/P42
+rish -c "rm -f '/storage/emulated/0/Android/data/com.kurogame.wutheringwaves.global/files/UE4Game/Client/Client/Saved/Config/Android/DeviceProfiles.ini' '/storage/emulated/0/Android/data/com.kurogame.wutheringwaves.global/files/UE4Game/Client/Client/Saved/Config/Android/Engine.ini'"
+rish -c "cp /storage/emulated/0/Download/P42/Engine.ini '/storage/emulated/0/Android/data/com.kurogame.wutheringwaves.global/files/UE4Game/Client/Client/Saved/Config/Android/'"
+
+TROUBLESHOOTING:
+writable dex error: Apply Android 14+ fix above
+Permission denied: Re-run termux-setup-storage
+`,
+
+pc_optimization: `
+PC OPTIMIZATION 2025/2026
+Config: .../Wuthering Waves/Client/Saved/Config/WindowsNoEditor/
+Log: %LocalAppData%/Wuthering Waves/Saved/Logs/Client.log
+
+LAUNCH ARGS:
+-SkipSplash - Skip intro
+-dx12 - Force DX12 (default recommended)
+-dx11 - Force DX11 (for crash issues)
+-vulkan - Force Vulkan (AMD good, Intel okay)
+-NOTEXTURESTREAMING - Disable (12GB+ VRAM)
+malloc=binned2 - Better memory
+
+NVIDIA OPTIMIZATION:
+r.Nvidia.Reflex=1 - Enable Reflex
+r.Nvidia.Reflex.Mode=2 - Reflex mode 2 (boost)
+r.GTSyncType=1 - Sync threads
+r.D3D12.UseAllowTearing=1 - Allow tearing
+r.TemporalAA.Algorithm=0 - TAA algorithm
+r.TemporalAA.Upsampling=1 - TAA upsampling
+r.TemporalAccumulation=1 - Smoother frames
+r.GPUFlush=1 - Reduce latency
+
+NVIDIA PANEL:
+Power: Maximum Performance
+Low Latency: Ultra
+Texture: Quality
+Shader Cache: On
+Threaded: Auto
+
+AMD OPTIMIZATION:
+r.AMDFlexPresentationMode=1 - AMD FreeSync
+-EnableAMDAntiLag=1 - Anti-lag
+-EnableAMDSS=1 - CAS sharpening
+
+WINDOWS:
+Disable Xbox Game Bar
+Enable HAGS (Hardware-Accelerated GPU Scheduling)
+Disable fullscreen optimizations
+Game Mode: On
+`,
+
+config_presets: `
+PRESETS 2026 (v3.3/v3.4)
+
+PERFORMANCE (Max FPS):
+r.ShadowQuality=0 r.SSR.Quality=0 r.Fog=0 r.VolumetricFog=0
+r.BloomQuality=0 r.MotionBlurQuality=0 r.DepthOfFieldQuality=0
+r.PostProcessAAQuality=0 r.ViewDistanceScale=1.0
+r.SkeletalMeshLODBias=2 r.Streaming.PoolSize=400
+r.Streaming.UsingNewKuroStreaming=1 r.ParallelFrustumCull=1
+
+BALANCED (Good Visuals + Perf):
+r.ShadowQuality=3 r.SSR.Quality=1 r.ViewDistanceScale=2
+r.MipMapLODBias=-1 r.MaxAnisotropy=8 r.PostProcessAAQuality=4
+r.BloomQuality=3 r.Fog=1 r.Streaming.PoolSize=600
+a.URO.ForceAnimRate=1 r.HZBOcclusion=1
+r.Streaming.UsingNewKuroStreaming=1 r.ParallelFrustumCull=1
+
+HIGH QUALITY (PC High-End / Flagship Phone):
+r.ShadowQuality=5 r.SSR.Quality=2 r.ViewDistanceScale=3
+r.MaxAnisotropy=16 r.PostProcessAAQuality=6 r.BloomQuality=4
+r.ReflectionCaptureResolution=256 r.Streaming.PoolSize=800
+r.TemporalAA.Upsampling=1 r.Fog=1 r.Streaming.MinBoost=4.0
+
+ULTRA (RTX 3080+ / RX 6800+):
+r.ShadowQuality=5 r.SSR.Quality=4 r.ViewDistanceScale=3.5
+r.MaxAnisotropy=16 r.PostProcessAAQuality=6 r.BloomQuality=5
+r.ReflectionCaptureResolution=512 r.VolumetricFog=1
+r.TemporalAASamples=16 r.TemporalAccumulation=1
+r.Upscale.Quality=3 r.KuroVolumetricLight.DownSampleFactor=1
+
+NVIDIA DLSS (PC):
+r.TemporalAA.Algorithm=0 r.TemporalAA.Upsampling=1
+r.Nvidia.Reflex=1 r.Nvidia.Reflex.Mode=2
+r.GTSyncType=1 r.D3D12.UseAllowTearing=1
+
+AMD FSR (PC):
+r.Upscale.Quality=3 r.AMDFlexPresentationMode=1
+
+ANDROID 120FPS:
+r.Kuro.MaxFPS.ThirdParty120=1 r.Mobile.DeviceEvaluation=3
+r.MobileContentScaleFactor=0.0 r.ShadowQuality=2 r.SSR.Quality=1
+r.KuroVolumeCloudEnable=0 r.Kuro.AutoCoolEnable=1
+a.URO.ForceAnimRate=1 r.HZBOcclusion=1
+r.Kuro.Foliage.GrassCullDistanceMax=15000
+r.Streaming.UsingNewKuroStreaming=1 bEnableGSR=1
+
+ANDROID 6GB RAM (Low Memory):
+r.Streaming.PoolSize=380 r.ShadowQuality=1 r.SSR.Quality=0
+r.KuroVolumeCloudEnable=0 r.Mobile.DeviceEvaluation=2
+r.Kuro.AutoCoolEnable=1 r.ViewDistanceScale=1.5
+m.LowMemoryDeviceThreshold=5800 r.ScreenSizeCullRatioFactor=3
+
+ALTERIAX CONFIG 1 (RTX 5090-4080, RX 9070 XT-7900 XTX):
+r.ShadowQuality=5 r.SSR.Quality=4 r.ViewDistanceScale=3.5
+r.MaxAnisotropy=16 r.PostProcessAAQuality=6 r.BloomQuality=5
+r.ReflectionCaptureResolution=512 r.VolumetricFog=1
+r.TemporalAASamples=16 r.MipMapLODBias=-2
+r.Upscale.Quality=3 r.KuroVolumetricLight.DownSampleFactor=1
+r.StaticMeshLODDistanceScale=0.5
+
+ALTERIAX CONFIG 2 (RTX 5070-3080, RX 9070-6800 XT):
+r.ShadowQuality=5 r.SSR.Quality=3 r.ViewDistanceScale=3
+r.MaxAnisotropy=16 r.PostProcessAAQuality=5 r.BloomQuality=4
+r.ReflectionCaptureResolution=256 r.Streaming.PoolSize=700
+r.TemporalAA.Upsampling=1 r.MipMapLODBias=-1
+
+ALTERIAX CONFIG 3 (RTX 5050-3050, RX 7600-6600, Intel Arc):
+r.ShadowQuality=4 r.SSR.Quality=2 r.ViewDistanceScale=2.5
+r.MaxAnisotropy=8 r.PostProcessAAQuality=4 r.BloomQuality=3
+r.Streaming.PoolSize=550 r.MipMapLODBias=0
+r.TemporalAA.Upsampling=1
+
+ALTERIAX CONFIG 4 (Low-end laptop/mobile):
+r.ShadowQuality=2 r.SSR.Quality=1 r.ViewDistanceScale=2
+r.MaxAnisotropy=4 r.PostProcessAAQuality=2 r.BloomQuality=2
+r.Streaming.PoolSize=400 r.MipMapLODBias=1
+r.KuroVolumeCloudEnable=0
+
+ALTERIAX CONFIG 5 (Very low-end):
+r.ShadowQuality=1 r.SSR.Quality=0 r.ViewDistanceScale=1.5
+r.MaxAnisotropy=1 r.PostProcessAAQuality=0 r.BloomQuality=0
+r.Streaming.PoolSize=300 r.MipMapLODBias=2
+r.KuroVolumeCloudEnable=0 r.Fog=0
+
+GAME8 RECOMMENDED (April 2026):
+Frame Rate: 60-120 FPS | Shadow: Medium | Volumetric Fog: Off
+Motion Blur: Off | Crowd Density: Medium | Foliage Density: Medium
+NVIDIA DLSS: On | AMD FSR: On | Ray Tracing: Off | VSync: Off
+`,
+
+common_fixes: `
+FIXES 2026 (v3.3/v3.4)
+White spots in caves: r.HZBOcclusion=1
+NPC pop-in: r.Kuro.NpcDisappearDistance=20000
+NPC pop-in (aggressive): r.Kuro.NpcDisappearDistance=30000
+Animation stutter: a.URO.ForceAnimRate=1
+Overheating: r.Kuro.AutoCoolEnable=1
+120 FPS on Android: r.Kuro.MaxFPS.ThirdParty120=1
+Unlock Ultra: r.Kuro.GraphicsQuality.ThirdPartyUltraEnable=1
+Vulkan crash: r.Vulkan.RobustBufferAccess=1
+Blurry textures: r.MipMapLODBias=-1 r.MaxAnisotropy=16
+Chromatic aberration: r.SceneColorFringeQuality=0
+Input lag (NVIDIA): r.Nvidia.Reflex=1 r.VSync=0
+Input lag (AMD): r.AMDFlexPresentationMode=1
+Low res Android: r.MobileContentScaleFactor=0.0
+Network lag: LGUIBlurTexture.save=0
+Low memory: r.Streaming.PoolSize=380 m.LowMemoryDeviceThreshold=5800
+UE4 Fatal Error (PC): -dx11 in launch args
+3.3 Cave artifacts: r.HZBOcclusion=1 r.ParallelFrustumCull=1
+3.3 Streaming fix: r.Streaming.UsingNewKuroStreaming=1
+Snapdragon GSR: bEnableGSR=1
+Cull distance fix: r.ScreenSizeCullRatioFactor=3
+`
+};
+
+// ═══════════════════════════════════════════════════════════════
+// ENGINE
+// ═══════════════════════════════════════════════════════════════
+let userKB = {};
+
+function getAllKB() {
+  return Object.entries({...KB, ...userKB});
+}
+
+function tokenize(text) {
+  return text.toLowerCase().split(/[\s,;:.!?()[\]{}\\/=+\-_]+/).filter(t => t.length > 1);
+}
+
+const STOP_WORDS = new Set(['the','a','an','is','it','in','of','for','to','do','how','what','why','when','where','can','i','my','me','you','we','this','that','are','was','with','have','from','on','at','be','use','get','does','its','or','and','by','if','not','so','but','up','just','some','any','all','more']);
+
+function searchKB(query) {
+  const qTokens = tokenize(query);
+  const keywords = qTokens.filter(t => !STOP_WORDS.has(t) && t.length > 1);
+  if (keywords.length === 0) return [];
+
+  const all = getAllKB();
+  const scored = all.map(([key, text]) => {
+    const lines = text.split('\n').filter(l => l.trim());
+    let lineScores = [];
+    for (const line of lines) {
+      const lt = line.toLowerCase();
+      let score = 0;
+      for (const kw of keywords) {
+        if (lt.includes(kw)) {
+          // Exact word match bonus
+          const wordMatch = new RegExp(`\\b${kw}\\b`).test(lt);
+          score += wordMatch ? 4 : 2;
+          // Command start bonus
+          if (lt.startsWith(kw) || /^r\.|^sg\.|^t\.|^a\.|^wp\./.test(lt) && lt.includes(kw)) score += 2;
+        }
+      }
+      if (score > 0) lineScores.push({ line, score });
+    }
+    lineScores.sort((a,b) => b.score - a.score);
+    const docScore = lineScores.reduce((s,l) => s + l.score, 0);
+    return { key, lines: lineScores.slice(0, 12), score: docScore };
+  }).filter(d => d.score > 0).sort((a,b) => b.score - a.score);
+
+  return scored;
+}
+
+function getCatForKey(key) {
+  const map = {
+    ue4_rendering:'ue4', ue4_textures:'ue4', ue4_shadows:'ue4', ue4_perf:'ue4',
+    wuwa_kuro:'kuro', config_presets:'preset',
+    android_setup:'android', pc_optimization:'pc', common_fixes:'fix'
+  };
+  return map[key] || (key.startsWith('user_') ? 'user' : 'ue4');
+}
+
+function catChip(key) {
+  const cat = getCatForKey(key);
+  const labels = { ue4:'UE4', kuro:'Kuro/WuWa', android:'Android', pc:'PC', fix:'Fix', preset:'Preset', user:'User File' };
+  return `<span class="resp-chip chip-${cat}">${labels[cat]||cat}</span>`;
+}
+
+// ── RESPONSE GENERATOR ──
+function generateResponse(query) {
+  const ql = query.toLowerCase().trim();
+
+  // GREETINGS
+  if (/^(hi|hello|hey|sup|yo|hii|what'?s up|howdy)/i.test(ql)) {
+    const _n=window._p42ctx?.total_devices||0, _f=window._p42ctx?.gpu_families?.length||0;
+    return {
+      type:'text',
+      html:`<p>Hey, Rover! 👾 I'm your <strong>P42 Bot</strong> — Firebase-powered, self-learning.</p>
+<br><p>আমি জানি:</p>
+<ul class="resp-list" style="margin-top:6px">
+<li>50+ UE4 CVars &amp; WuWa-specific commands</li>
+<li>WuWa Kuro game-specific settings</li>
+<li>Android setup — Shizuku + Termux + rish</li>
+<li>PC optimization &amp; launch args</li>
+<li>Common bugs — caves, NPCs, stutters, crashes</li>
+<li style="color:var(--accent-cyan)">🧠 Firebase: <strong>${_n}</strong> device logs · <strong>${_f}</strong> GPU families</li>
+</ul>
+<br><p style="font-size:.82rem;color:var(--fg2)">💡 Ask: <em>"Community data"</em> · <em>"Best CVars for Adreno 6xx"</em> · <em>"Fix cave white spots"</em></p>`
+    };
+  }
+
+  // ABOUT
+  if (/(who are you|what (are|is) (you|this)|your name|what (can|do) you)/i.test(ql)) {
+    return {
+      type:'text',
+      html:`<p>I'm the <strong>P42 WuWa Bot Assistant</strong> — an offline knowledge bot built for Wuthering Waves optimization.</p>
+<br><p>My knowledge comes from:</p>
+<ul class="resp-list" style="margin-top:6px">
+<li>AlteriaX's WuWa-Configs GitHub repo</li>
+<li>framedsc.com UE4 command reference</li>
+<li>Epic Games UE4 documentation</li>
+<li>Community-tested WuWa optimization data</li>
+<li>Kuro Game's DeviceProfiles config system</li>
+</ul>
+<br><p style="font-size:.82rem;color:var(--fg2)">You can also upload extra <code class="ic">.txt</code> or <code class="ic">.ini</code> files to expand my knowledge!</p>`
+    };
+  }
+
+  const results = searchKB(query);
+
+  if (results.length === 0) {
+    return {
+      type:'text',
+      html:`<p>I don't have specific info on that in my knowledge base. Try rephrasing, or upload a relevant <code class="ic">.txt</code> file above.</p>
+<br><p>External resources:</p>
+<ul class="resp-list" style="margin-top:6px">
+<li><a href="https://github.com/AlteriaX" target="_blank" style="color:var(--cy)">AlteriaX GitHub — WuWa config files</a></li>
+<li><a href="https://framedsc.com/GameGuides/WutheringWaves.htm" target="_blank" style="color:var(--cy)">framedsc.com — UE4 commands</a></li>
+<li>P42 Discord/Telegram for community help</li>
+</ul>`
+    };
+  }
+
+  // Detect intent
+  const isHow = /(how (to|do|can|install|fix|setup|deploy|enable|disable|get|make))/i.test(ql);
+  const isFix = /(fix|issue|problem|error|crash|not working|broken|wrong|bad|stutter|lag|artifact|spot|pop.in)/i.test(ql);
+  const isWhat = /(what.*does|what is|explain|what.*mean|define)/i.test(ql);
+  const isPreset = /(preset|profile|best.*setting|recommend|which.*setting|max.*perf|performance.*config)/i.test(ql);
+  const isAndroid = /(android|phone|mobile|shizuku|termux|rish)/i.test(ql);
+  const isPC = /(pc|windows|launch arg|steam|nvidia|dx12|vulkan|directx)/i.test(ql);
+
+  const top = results.slice(0, 4);
+  const usedLines = new Map(); // line → key
+
+  for (const doc of top) {
+    for (const { line, score } of doc.lines) {
+      if (!usedLines.has(line) && score > 0) usedLines.set(line, doc.key);
+    }
+  }
+
+  const allLines = [...usedLines.entries()].map(([line, key]) => ({ line, key }));
+
+  // Classify lines
+  const cmdLines = allLines.filter(({ line }) =>
+    /^\s*(r\.|sg\.|t\.|a\.|wp\.|foliage\.|stat |Kuro\.|LGU|bEnable|bView|rish |cd |cp |chmod|termux|Step\s*\d)/i.test(line.trim())
+  );
+  const descLines = allLines.filter(({ line }) =>
+    !cmdLines.some(c => c.line === line) && line.trim().length > 10 && !line.trim().startsWith('===') && !line.trim().startsWith('---')
+  );
+
+  // Filter by relevance
+  const qTokens = tokenize(query).filter(t => !STOP_WORDS.has(t));
+  const relevantDesc = descLines.filter(({ line }) => qTokens.some(kw => line.toLowerCase().includes(kw) && kw.length > 2)).slice(0, 6);
+  const relevantCmds = cmdLines.filter(({ line }) => qTokens.some(kw => line.toLowerCase().includes(kw) && kw.length > 2)).slice(0, 10);
+
+  let html = '';
+
+  // Source chips
+  const srcKeys = [...new Set(top.map(d => d.key))];
+  html += `<div style="margin-bottom:10px">${srcKeys.map(catChip).join('')}</div>`;
+
+  // Description block
+  if (relevantDesc.length > 0) {
+    for (const { line } of relevantDesc) {
+      const clean = line.replace(/^[-•*]\s*/, '').trim();
+      if (!clean || clean.length < 8) continue;
+      // Check if it's a "Fix: Solution" pattern
+      if (clean.includes(': ') && (isFix || isHow)) {
+        const [prob, sol] = clean.split(/:\s(.+)/);
+        html += `<div class="resp-section"><p style="color:var(--fg2);font-size:.83rem;margin-bottom:3px">${escHtml(prob)}:</p><p>${escHtml(sol)}</p></div>`;
+      } else {
+        html += `<div class="resp-section"><p>${escHtml(clean)}</p></div>`;
+      }
+    }
+    if (relevantDesc.length > 0 && relevantCmds.length > 0) html += '<br>';
+  }
+
+  // Command block
+  if (relevantCmds.length > 0) {
+    const label = isAndroid ? 'TERMINAL COMMANDS' : isPreset ? 'PRESET CVars' : 'CVars / COMMANDS';
+    html += `<div class="code-wrap">
+<div class="code-header">${label} — ${relevantCmds.length} result${relevantCmds.length>1?'s':''}</div>`;
+    for (const { line } of relevantCmds) {
+      const t = line.trim();
+      if (!t) continue;
+      // Check for key=value - comment pattern
+      const eqIdx = t.indexOf('=');
+      const dashIdx = t.indexOf(' - ');
+      if (eqIdx > 0 && eqIdx < dashIdx) {
+        const key = t.substring(0, eqIdx);
+        const rest = t.substring(eqIdx+1);
+        const val = dashIdx > 0 ? rest.substring(0, dashIdx - eqIdx - 1) : rest;
+        const comment = dashIdx > 0 ? t.substring(dashIdx + 3) : '';
+        html += `<div class="code-line"><span class="code-key">${escHtml(key)}</span><span class="code-eq">=</span><span class="code-val">${escHtml(val)}</span>${comment ? `<span class="code-comment">// ${escHtml(comment)}</span>` : ''}</div>`;
+      } else {
+        html += `<div class="code-plain">${escHtml(t)}</div>`;
+      }
+    }
+    html += '</div>';
+  }
+
+  // Fallback if nothing matched well
+  if (relevantDesc.length === 0 && relevantCmds.length === 0) {
+    const fallback = allLines.slice(0, 5).map(({line}) => line.trim()).filter(l => l.length > 8 && !l.startsWith('==='));
+    if (fallback.length > 0) {
+      html += '<div class="code-wrap"><div class="code-header">RELATED RESULTS</div>';
+      for (const l of fallback) {
+        html += `<div class="code-plain">${escHtml(l)}</div>`;
+      }
+      html += '</div>';
+    } else {
+      html += `<p style="color:var(--fg2)">Found related data but results weren't specific enough. Try: <em>"How to fix [issue]?"</em> or ask for a specific CVar name.</p>`;
+    }
+  }
+
+  return { type: 'html', html };
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CHAT UI
+// ═══════════════════════════════════════════════════════════════
+function ts() {
+  return new Date().toLocaleTimeString('en', {hour:'2-digit', minute:'2-digit'});
+}
+
+function addMsg(role, content, animate=false) {
+  const wrap = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  const label = role==='user' ? 'YOU' : 'P42 Bot';
+
+  if (role==='bot' && animate) {
+    div.innerHTML = `<div class="msg-meta"><span class="msg-author">${label}</span><span>${ts()}</span></div>
+      <div class="bubble"><div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
+    wrap.appendChild(div);
+    wrap.scrollTop = wrap.scrollHeight;
+    return div;
+  }
+
+  let bubbleContent = '';
+  if (role==='user') {
+    bubbleContent = escHtml(typeof content === 'string' ? content : content.html);
+  } else {
+    bubbleContent = typeof content === 'object' ? content.html : content;
+  }
+
+  div.innerHTML = `<div class="msg-meta"><span class="msg-author">${label}</span><span>${ts()}</span></div>
+    <div class="bubble">${bubbleContent}</div>`;
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+  return div;
+}
+
+function updateMsg(div, response) {
+  const bubble = div.querySelector('.bubble');
+  bubble.innerHTML = typeof response === 'object' ? response.html : response;
+  document.getElementById('chat-messages').scrollTop = 99999;
+}
+
+// ── Firebase community query ────────────────────────────────────
+function _fbQuery(ql){
+  const ctx=window._p42ctx;
+  if(!ctx) return null;
+
+  // Overview of all community data
+  if(/(community|firebase|total device|how many|pattern|statistic)/i.test(ql)){
+    const fams=ctx.patterns?.families;
+    if(!fams||!Object.keys(fams).length) return{type:'text',html:'<p>Community database empty — upload Client.log in Config Generator to contribute!</p>'};
+    const fList=Object.keys(fams);
+    const total=fList.reduce((s,k)=>s+(fams[k].count||0),0);
+    let html=`<p><strong style="color:var(--accent-cyan)">Firebase Community Database</strong></p><p style="margin:5px 0">${total} device logs &nbsp;·&nbsp; ${fList.length} GPU families</p><ul class="resp-list" style="margin-top:6px">`;
+    fList.slice(0,8).forEach(fam=>{
+      const d=fams[fam];
+      const lc=Object.keys(d.best_cvars||{}).length;
+      html+=`<li><code style="color:var(--accent-cyan)">${fam}</code> — ${d.count}× · best: <strong>${d.best_preset}</strong> (${d.best_pct}%) · ${lc} CVars learned</li>`;
+    });
+    if(fList.length>8) html+=`<li style="color:var(--fg2)">+${fList.length-8} more…</li>`;
+    html+='</ul>';
+    return{type:'text',html};
+  }
+
+  // GPU-specific learned CVars
+  const gm=ql.match(/(?:cvar|setting|best|optimal|config).*(?:for|on)?\s+(adreno[\s\d]+|mali[\s-]\w+|xclipse[\s\w]*)/i)
+          ||ql.match(/(adreno[\s\d]+|mali[\s-]\w+)\s*(?:cvar|setting|best|config)/i);
+  if(gm&&ctx.patterns?.families){
+    const query=gm[1].trim().toLowerCase().replace(/\s+/g,'').slice(0,10);
+    const fams=ctx.patterns.families;
+    const matched=Object.keys(fams).find(k=>k.toLowerCase().replace(/_/g,'').includes(query.replace('adreno','adreno').replace('mali','mali')));
+    if(matched){
+      const d=fams[matched];
+      const ce=Object.entries(d.best_cvars||{});
+      let html=`<p><strong style="color:var(--accent-cyan)">${matched}</strong> — ${d.count} device logs</p>`;
+      html+=`<p style="margin:4px 0">Best preset: <strong>${d.best_preset}</strong> (${d.best_pct}% · avg fps:${d.avg_fps||'?'} · vulkan:${(d.vulkan_rate*100).toFixed(0)}%)</p>`;
+      if(ce.length){
+        html+=`<p style="margin:6px 0 3px;font-size:.82rem;color:var(--accent-green)">🧠 Community-learned optimal CVars:</p><ul class="resp-list">`;
+        ce.slice(0,14).forEach(([k,v])=>{ html+=`<li><code>${k}=${v}</code></li>`; });
+        html+='</ul>';
+      } else {
+        html+=`<p style="color:var(--fg2)">No CVars learned yet for this family — need 3+ votes per CVar.</p>`;
+      }
+      return{type:'text',html};
+    }
+  }
+  return null;
+}
+
+// ── Load Firebase context on page init ──────────────────────────
+async function _loadP42Ctx(){
+  try{
+    if(window.P42Brain && typeof P42Brain.getBotContext === 'function'){
+      const ctx=await P42Brain.getBotContext();
+      window._p42ctx=ctx;
+      console.log('[Bot] P42Brain ctx:', ctx.total_devices, 'devices,', ctx.gpu_families.length, 'families');
+      document.getElementById('status-badge').textContent = 'KB + FIREBASE';
+    }else{
+      document.getElementById('status-badge').textContent = 'KB OFFLINE';
+    }
+  }catch(e){ 
+    console.warn('[Bot] ctx load:', e.message); 
+    document.getElementById('status-badge').textContent = 'KB OFFLINE';
+  }
+}
+
+function sendMessage() {
+  const inp = document.getElementById('chat-input');
+  const text = inp.value.trim();
+  if (!text) return;
+
+  inp.value = '';
+  inp.style.height = 'auto';
+  document.getElementById('send-btn').disabled = true;
+
+  addMsg('user', { html: escHtml(text) });
+  const botDiv = addMsg('bot', '', true);
+
+  setTimeout(() => {
+    // Try Firebase community data first, fall back to offline KB
+    const fbResp = window._p42ctx ? _fbQuery(text.toLowerCase()) : null;
+    const response = fbResp || generateResponse(text);
+    updateMsg(botDiv, response);
+    document.getElementById('send-btn').disabled = false;
+    inp.focus();
+  }, 350 + Math.random() * 250);
+}
+
+function askQuick(q) {
+  document.getElementById('chat-input').value = q;
+  sendMessage();
+}
+
+document.getElementById('chat-input').addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+});
+
+// ═══════════════════════════════════════════════════════════════
+// FILE LOADING
+// ═══════════════════════════════════════════════════════════════
+function loadUserFile(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const key = 'user_' + file.name.replace(/[^a-z0-9_]/gi,'_').toLowerCase();
+    userKB[key] = e.target.result;
+    updateKbCount();
+
+    const cont = document.getElementById('loaded-files');
+    const badge = document.createElement('div');
+    badge.className = 'kb-file-badge';
+    badge.dataset.key = key;
+    badge.innerHTML = `✓ ${escHtml(file.name)} <span class="kb-file-rm" onclick="removeFile('${key}', this.parentElement)">×</span>`;
+    cont.appendChild(badge);
+
+    addMsg('bot', {
+      html: `<p>📂 Loaded <strong>${escHtml(file.name)}</strong> into knowledge base (${Math.round(e.target.result.length/1024*10)/10} KB)</p>
+<p style="margin-top:6px;font-size:.82rem;color:var(--fg2)">I can now answer questions about content in this file.</p>`
+    });
+  };
+  reader.readAsText(file);
+}
+
+function removeFile(key, el) {
+  delete userKB[key];
+  el.remove();
+  updateKbCount();
+}
+
+function updateKbCount() {
+  const built = Object.keys(KB).length;
+  const user = Object.keys(userKB).length;
+  document.getElementById('kb-count').textContent = `${built} built-in${user > 0 ? ` + ${user} user` : ''} modules`;
+
+  const cont = document.getElementById('kb-cats');
+  const userTags = Object.keys(userKB).map(k =>
+    `<span class="kb-cat cat-user">📄 ${k.replace(/^user_/,'').replace(/_/g,' ').replace(/\.(txt|ini|log|cfg)$/i,'')}</span>`
+  ).join('');
+  const base = cont.querySelectorAll('.kb-cat:not(.cat-user)');
+  // Remove old user tags
+  cont.querySelectorAll('.cat-user').forEach(el => el.remove());
+  if (userTags) cont.insertAdjacentHTML('beforeend', userTags);
+}
+
+document.getElementById('data-file-input').addEventListener('change', function() {
+  [...this.files].forEach(loadUserFile);
+  this.value = '';
+});
+
+const dz = document.getElementById('data-drop');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.borderColor='var(--cy)'; });
+dz.addEventListener('dragleave', () => { dz.style.borderColor=''; });
+dz.addEventListener('drop', e => {
+  e.preventDefault();
+  dz.style.borderColor='';
+  [...e.dataTransfer.files].forEach(f => { if (/\.(txt|ini|log|cfg)$/i.test(f.name)) loadUserFile(f); });
+});
+
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  // Load Firebase community context
+  _loadP42Ctx();
+  setTimeout(() => {
+    addMsg('bot', {
+      html: `<p>Welcome, Rover! 👾 I'm your <strong>offline P42 Bot assistant</strong> — no internet or API key required.</p>
+<br><p>Loaded with <strong>${Object.keys(KB).length} knowledge modules</strong> covering:</p>
+<ul class="resp-list" style="margin-top:6px">
+<li>UE4 rendering, texture &amp; shadow CVars</li>
+<li>WuWa Kuro-specific settings &amp; FPS unlock</li>
+<li>Android Shizuku + Termux setup guide</li>
+<li>PC launch args, INI optimization, NVIDIA settings</li>
+<li>Performance presets (Performance / Balanced / High / Ultra)</li>
+<li>Common bug fixes — caves, NPCs, stutters, crashes</li>
+</ul>
+<br><p style="font-size:.82rem;color:var(--fg2)">Upload extra <code class="ic">.txt / .ini</code> files above to expand my knowledge. Ask me anything!</p>`
+    });
+  }, 300);
+});
+</script>
+  <script src="assets/js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+=================================================================
+UNREAL ENGINE 4 CONSOLE COMMANDS - 2026 EDITION
+Source: framedsc.com, UE4 Docs, WuWa community
+=================================================================
+
+=================================================================
+SECTION 1: RENDER QUALITY
+=================================================================
+
+RESOLUTION
+----------
+r.ScreenPercentage=100           - Native resolution
+r.ScreenPercentage=85             - Balance (recommended)
+r.ScreenPercentage=75             - Performance boost
+r.ScreenPercentage=60             - Max performance
+
+TEXTURES
+--------
+r.MipMapLODBias=-1               - Sharper textures (negative = sharper)
+r.MipMapLODBias=0                - Default quality
+r.MipMapLODBias=2               - Blurry (performance)
+r.MaxAnisotropy=16              - Max anisotropic filtering (0-16)
+r.Streaming.MinBoost=4.0         - Texture streaming boost
+r.Streaming.MipBias=0            - Global mip bias
+
+ANTI-ALIASING
+-------------
+r.PostProcessAAQuality=6         - TAA quality (0-6, 6=max)
+r.TemporalAA.Upsampling=1       - TAA upsampling
+r.TemporalAA.MobileUpsampling=1  - Mobile TAA
+r.TemporalAA.MobileFrameWeight=0.20
+
+=================================================================
+SECTION 2: SHADOWS & LIGHTING
+=================================================================
+
+SHADOW QUALITY
+--------------
+r.ShadowQuality=5               - Max quality (0=off, 5=max)
+sg.ShadowQuality=3               - Scalability setting
+r.Shadow.DistanceScale=3        - Shadow draw distance multiplier
+r.Shadow.MaxCSMResolution=2048  - Max cascade resolution
+r.Shadow.MinResolution=128      - Min shadow resolution
+r.Shadow.PerObjectShadowMapResolution=1024
+r.Shadow.CSM.MaxMobileCascades=3 - Max mobile cascades
+r.Shadow.Virtual.Enable=1        - Virtual shadow maps (UE5)
+r.Shadow.CachedShadowFactor=0.5  - Cached shadow factor
+
+OCCLUSION
+---------
+r.HZBOcclusion=1                 - HZB occlusion (fixes cave artifacts)
+r.HZBOcclusion=0               - Disable (faster)
+
+AMBIENT OCCLUSION
+-----------------
+r.AmbientOcclusionLevels=0     - Disable AO
+r.AmbientOcclusion.Denoiser=0  - Disable AO denoiser
+r.SSAO.Downsample=1            - Half-res SSAO
+r.Mobile.GTAO.Quality=3         - Mobile GTAO
+
+=================================================================
+SECTION 3: POST PROCESSING
+=================================================================
+
+BLOOM & EFFECTS
+---------------
+r.BloomQuality=4                - Bloom quality (0-4)
+r.MotionBlurQuality=0          - Motion blur (0=off)
+
+DEPTH OF FIELD
+--------------
+r.DepthOfFieldQuality=0         - DOF (0=off)
+
+CHROMATIC ABERRATION
+--------------------
+r.SceneColorFringeQuality=0   - CA OFF (recommended for performance)
+r.SceneColorFringeQuality=1   - CA ON
+
+TONEMAPPER
+----------
+r.Tonemapper.Quality=4         - Tonemapper quality
+r.KuroTonemapping=3             - Kuro custom tonemapper (WuWa specific)
+
+LIGHT SHAFTS
+-------------
+r.LightShaftDownSampleFactor=1 - Full res light shafts
+r.MobileLightShaft.DownSampleFactor=1
+
+=================================================================
+SECTION 4: REFLECTIONS & WATER
+=================================================================
+
+SCREEN SPACE REFLECTIONS
+------------------------
+r.SSR.Quality=4                - SSR quality (0=off, 4=max)
+r.SSR.MaxRoughness=1.0         - Max roughness for SSR
+r.SSR.HalfResSceneColor=0     - Full res SSR
+
+MOBILE WATER
+------------
+r.Mobile.WaterSSR=1            - Enable mobile SSR
+r.Mobile.WaterSSRResDiv=1.0   - Full resolution water
+r.Mobile.WaterSSRStep=64      - SSR steps
+r.Mobile.EnableLandscapeSSR=1 - Landscape SSR
+
+=================================================================
+SECTION 5: VIEW DISTANCE & FOLIAGE
+=================================================================
+
+VIEW DISTANCE
+------------
+r.ViewDistanceScale=3          - Global view distance (1-10)
+sg.ViewDistanceQuality=3        - Scalability
+r.StaticMeshLODDistanceScale=1.0
+
+FOLIAGE
+-------
+foliage.LODDistanceScale=3     - Foliage distance
+foliage.DensityType=2           - Foliage density
+sg.FoliageQuality=3             - Scalability foliage
+
+SKELETAL MESH
+------------
+r.SkeletalMeshLODBias=0        - Max character quality (0=best)
+r.SkeletalMeshLODBias=2         - Low quality
+
+=================================================================
+SECTION 6: FOG & ATMOSPHERE
+=================================================================
+
+FOG
+---
+r.Fog=0                        - Disable fog (performance boost)
+r.Fog=1                        - Enable fog
+r.VolumetricFog=0             - Disable volumetric fog
+r.VolumetricFog=1             - Enable volumetric fog
+
+=================================================================
+SECTION 7: PERFORMANCE & MEMORY
+=================================================================
+
+VSYNC
+-----
+r.VSync=0                     - Disable VSync (lower input lag)
+r.VSync=1                     - Enable VSync
+
+FPS CAP
+------
+t.MaxFPS=60                   - Cap at 60 FPS
+t.MaxFPS=120                  - Cap at 120 FPS
+
+MEMORY
+------
+r.RenderTargetPoolMin=50      - Min render target pool (MB)
+r.Streaming.PoolSize=2000     - Texture pool size (MB)
+r.Streaming.QualityExtraLODBiasSetting=0 - Streaming quality
+
+=================================================================
+SECTION 8: NVIDIA & DLSS (2026)
+=================================================================
+
+NVIDIA REFLEX
+-------------
+t.Streamline.Reflex.Enable=1   - Enable Reflex
+t.Streamline.Reflex.Mode=1    - Mode 1=ON, 2=Ultra
+t.Streamline.Reflex.HandleMaxTickRate=true
+t.MaxFPS=0                     - Don't cap when using Reflex
+
+DLSS / NGX
+----------
+r.NGX.Enable=1                 - Enable DLSS
+r.NGX.DLSS.Enable=1           - DLSS on
+r.NGX.DLSS.Quality=3          - Quality: 0=Ultra,1=Quality,2=Balanced,3=Performance
+
+=================================================================
+SECTION 9: VULKAN (Android)
+=================================================================
+
+VULKAN SETTINGS
+---------------
+r.Vulkan.StencilBuffer=1       - Enable stencil buffer
+r.Vulkan.RobustBufferAccess=1 - Stability fix (prevents crashes)
+r.Vulkan.RobustBufferAccess=0 - Performance (may crash)
+r.Vulkan.DescriptorSetLayoutMode=0
+
+=================================================================
+SECTION 10: ANIMATION
+=================================================================
+
+URO (Update Rate Optimization)
+------------------------------
+a.URO.ForceAnimRate=1         - Force full animation rate (fixes stutter)
+a.URO.Enable=0                 - Disable URO
+
+=================================================================
+SECTION 11: LAUNCH ARGUMENTS
+=================================================================
+
+COMMON ARGS
+-----------
+-SkipSplash                   - Skip intro videos
+-dx12                         - Force DirectX 12
+-dx11                         - Force DirectX 11
+-vulkan                       - Force Vulkan
+-fullscreen                   - Fullscreen mode
+-windowed                     - Windowed mode
+-novsync                      - Disable VSync
+-log                          - Enable log output
+
+RESOLUTION
+----------
+-ResX=1920 -ResY=1080         - Force resolution
+
+=================================================================
+SECTION 12: DEBUGGING & STATS
+=================================================================
+
+DEBUG COMMANDS
+--------------
+stat fps                      - Show FPS counter
+stat unit                     - Frame time breakdown
+stat game                     - Game thread stats
+stat gpu                      - GPU stats
+r.ShowMipLevels=1             - Show mip levels (debug)
+r.ScreenPercentage=50         - 50% render test
+
+=================================================================
+SECTION 13: INI SECTIONS REFERENCE
+=================================================================
+
+ENGINE INI SECTIONS
+-------------------
+[/Script/Engine.RendererSettings]       - Main render settings
+[/Script/Engine.RendererRTXSettings]   - RTX settings
+[SystemSettings]                       - System-level settings
+[/Script/Engine.GameEngine]            - Game engine
+[/Script/Engine.InputSettings]         - Input config
+[DeviceProfiles]                       - Device profiles
+[Core.System]                          - Core paths
+[/Script/Engine.UserInterfaceSettings] - UI settings
+
+DEVICE PROFILE SYNTAX
+---------------------
+CVars=r.Command=value         - Set CVar
++CVars=r.Command=value       - Add CVar (array)
+
+=================================================================
+END OF UE4 COMMANDS REFERENCE
+=================================================================

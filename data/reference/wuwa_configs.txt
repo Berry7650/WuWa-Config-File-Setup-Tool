@@ -1,0 +1,260 @@
+=================================================================
+WUTHERING WAVES (WuWa) CONFIG COMMANDS - 2026 EDITION
+Source: AlteriaX/WuWa-Configs, framedsc.com, community research
+=================================================================
+
+=================================================================
+SECTION 1: KURO GAME / WUWA SPECIFIC COMMANDS
+=================================================================
+
+FPS UNLOCK (Android + PC)
+--------------------------
+r.Kuro.MaxFPS.ThirdParty120=1     - Unlock 120 FPS cap
+r.Kuro.MaxFPS.ThirdParty60=1      - Allow third-party FPS management
+
+QUALITY OPTIONS
+---------------
+r.Kuro.GraphicsQuality.ThirdPartyUltraEnable=1 - Unlock Ultra quality option
+r.Kuro.GraphicsQuality.ThirdPartyUltraEnable=0 - Lock to max High
+
+DEVICE EVALUATION (Force Tier)
+------------------------------
+r.Mobile.DeviceEvaluation=3       - Force Very High tier (flagship)
+r.Mobile.DeviceEvaluation=2       - Force High tier
+r.Mobile.DeviceEvaluation=1       - Force Mid tier
+r.Mobile.DeviceEvaluation=0      - Use default evaluation
+
+NATIVE RESOLUTION (Android)
+---------------------------
+r.MobileContentScaleFactor=0.0   - Force native screen resolution
+r.SecondaryScreenPercentage.GameViewport=100 - 100% internal render res
+
+VISUAL EFFECTS
+--------------
+r.Kuro.KuroEnableFFTBloom=1      - Enable FFT bloom (better looking)
+r.Kuro.KuroBloomStreak=0         - Disable bloom streak effect
+r.KuroVolumeCloudEnable=1        - Enable volumetric clouds
+r.KuroVolumeCloudEnable=0       - Disable (performance boost)
+r.KuroTonemapping=3              - Kuro custom tonemapper (recommended: 3)
+
+CHARACTER RENDERING
+-------------------
+r.Mobile.KuroPostprocess=1       - Enable character rim light (recommended!)
+r.SkeletalMeshLODBias=0         - Max character quality (0=best)
+r.SkeletalMeshLODBias=2          - Low quality characters
+
+NPC / WORLD
+----------
+r.Kuro.NpcDisappearDistance=20000 - Fix NPC pop-in at distance (recommended)
+r.Kuro.NpcDisappearDistance=0     - Disable distance culling
+
+FOLIAGE (2026)
+---------------
+r.Kuro.Foliage.MobileNearCullDistanceMax=6000
+r.Kuro.Foliage.MobileMiddleCullDistanceMax=10000
+r.Kuro.Foliage.MobileGrassCullDistanceMax=20000
+r.Kuro.Foliage.MobileFarCullDistanceMax=25000
+
+WORLD STREAMING (2026)
+----------------------
+wp.Runtime.KuroRuntimeStreamingRangeOverallScale=3.0 - World streaming range
+wp.Runtime.PlannedLoadingRangeScale=3.0
+wp.Runtime.SoraGridBlackListHeight=20000
+
+MOBILE WATER / SSR
+------------------
+r.Mobile.WaterSSR=1              - Enable mobile water reflections
+r.Mobile.WaterSSR=0              - Disable (performance)
+r.Mobile.WaterSSRResDiv=1.0      - Full resolution water SSR
+r.Mobile.EnableLandscapeSSR=1   - Enable landscape reflections
+
+THERMAL PROTECTION
+------------------
+r.Kuro.AutoCoolEnable=1         - Enable thermal throttle protection
+r.Kuro.AutoCoolEnable=0          - Disable (only if you want to test limits)
+
+=================================================================
+SECTION 2: 2026 NEW CVARS
+=================================================================
+
+NVIDIA DLSS / REFLEX
+-------------------
+t.Streamline.Reflex.Enable=1    - Enable NVIDIA Reflex (lower input lag)
+t.Streamline.Reflex.Mode=1      - Reflex mode 1=ON, 2=Ultra
+t.Streamline.Reflex.HandleMaxTickRate=true
+r.NGX.Enable=1                  - Enable DLSS (if supported)
+r.NGX.DLSS.Enable=1             - DLSS on
+r.NGX.DLSS.Quality=3            - DLSS quality: 0=Ultra,1=Quality,2=Balanced,3=Performance
+
+VULKAN OPTIMIZATION
+-------------------
+r.Vulkan.StencilBuffer=1        - Enable stencil buffer
+r.Vulkan.RobustBufferAccess=1   - Stability fix (prevents crashes)
+r.Vulkan.RobustBufferAccess=0   - Performance (may crash on some devices)
+
+POST PROCESSING (2026)
+----------------------
+r.PostProcessAAQuality=6       - Max TAA quality (0-6)
+r.SceneColorFringeQuality=0     - Disable chromatic aberration
+r.SceneColorFringeQuality=1     - Enable CA
+
+RAY TRACING (RTX)
+-----------------
+r.Kuro.RayTracing=1             - Enable ray tracing (RTX cards)
+r.RayTracing=0                  - Disable for performance
+
+LUMEN (Next-gen lighting)
+-------------------------
+r.Lumen.ScreenProbeGather.Temporal.DistanceThreshold=0.03
+r.Lumen.Reflections.AsyncCompute=1
+
+=================================================================
+SECTION 3: PERFORMANCE CVARS
+=================================================================
+
+RENDER RESOLUTION
+-----------------
+r.ScreenPercentage=100          - Native (100%)
+r.ScreenPercentage=85            - 85% (balance quality/performance)
+r.ScreenPercentage=75           - 75% (performance boost)
+r.ScreenPercentage=60           - 60% (max performance)
+
+SHADOWS
+-------
+r.ShadowQuality=5               - Max quality (0-5)
+r.ShadowQuality=0               - Off (max performance)
+r.Shadow.DistanceScale=2         - Shadow draw distance
+r.Shadow.Virtual.Enable=1       - Virtual shadow maps
+r.Shadow.CSM.MaxMobileCascades=3 - Max shadow cascades
+
+TEXTURES
+--------
+r.MipMapLODBias=-1              - Sharper textures (negative)
+r.MipMapLODBias=0               - Default
+r.MaxAnisotropy=16              - Max anisotropic filtering
+r.Streaming.MinBoost=4.0        - Texture streaming boost
+r.Streaming.PoolSize=2048       - Pool size in MB
+
+VIEW DISTANCE
+-------------
+r.ViewDistanceScale=3           - Global multiplier (1-10)
+sg.ViewDistanceQuality=3       - Scalability setting
+
+FOLIAGE
+-------
+foliage.LODDistanceScale=3      - Grass render distance
+sg.FoliageQuality=3             - Scalability foliage quality
+
+=================================================================
+SECTION 4: NETWORK / UI OPTIMIZATION
+=================================================================
+
+LGUI / NETWORK
+-------------
+LGUIBlurTexture.save=0         - Disable blur save (network boost)
+Kuro.LGUI.Blur=0               - Disable LGUI blur
+
+VSYNC
+-----
+r.VSync=0                      - Disable VSync (lower input lag)
+r.VSync=1                      - Enable VSync
+
+=================================================================
+SECTION 5: BUG FIXES
+=================================================================
+
+WHITE SPOTS IN CAVES
+-------------------
+Fix: r.HZBOcclusion=1          - HZB occlusion culling
+
+ANIMATION STUTTER
+-----------------
+Fix: a.URO.ForceAnimRate=1     - Force full animation rate
+
+VULKAN CRASHES
+--------------
+Fix: r.Vulkan.RobustBufferAccess=1
+
+NPC POP-IN
+---------
+Fix: r.Kuro.NpcDisappearDistance=20000
+
+OVERHEATING
+-----------
+Fix: r.Kuro.AutoCoolEnable=1
+
+BLURRY TEXTURES
+---------------
+Fix: r.MipMapLODBias=-1 + r.MaxAnisotropy=16
+
+INPUT LAG (PC)
+-------------
+Fix: r.VSync=0 + t.Streamline.Reflex.Enable=1
+
+=================================================================
+SECTION 6: FILE PATHS
+=================================================================
+
+ANDROID INSTALL PATH
+--------------------
+/storage/emulated/0/Android/data/com.kurogame.wutheringwaves.global/files/UE4Game/Client/Client/Saved/Config/Android/
+
+PC INSTALL PATH (Windows)
+-------------------------
+..\Wuthering Waves\Wuthering Waves Game\Client\Saved\Config\WindowsNoEditor\
+
+CLIENT LOG PATH (Android)
+-------------------------
+/storage/emulated/0/Android/data/com.kurogame.wutheringwaves.global/files/UE4Game/Client/Client/Saved/Logs/Client.log
+
+CLIENT LOG PATH (PC)
+--------------------
+%LocalAppData%\Wuthering Waves\Saved\Logs\Client.log
+
+=================================================================
+SECTION 7: PRESETS
+=================================================================
+
+PERFORMANCE (Max FPS)
+--------------------
+r.Kuro.MaxFPS.ThirdParty120=1
+r.ScreenPercentage=75
+r.ShadowQuality=0
+r.Fog=0
+r.KuroVolumeCloudEnable=0
+fx.KuroUseGPUParticles=0
+r.VSync=0
+
+BALANCED (FPS + Quality)
+-------------------------
+r.Kuro.MaxFPS.ThirdParty120=1
+r.ScreenPercentage=85
+r.ShadowQuality=1
+r.Mobile.KuroPostprocess=1
+r.KuroVolumeCloudEnable=0
+r.HZBOcclusion=1
+
+HIGH (Better Visuals)
+---------------------
+r.Kuro.MaxFPS.ThirdParty120=1
+r.Kuro.GraphicsQuality.ThirdPartyUltraEnable=1
+r.ScreenPercentage=100
+r.ShadowQuality=2
+r.Mobile.KuroPostprocess=1
+r.BloomQuality=3
+r.LightShaftQuality=1
+
+ULTRA/RT (Max Quality)
+-----------------------
+r.Kuro.MaxFPS.ThirdParty120=1
+r.Kuro.GraphicsQuality.ThirdPartyUltraEnable=1
+r.ScreenPercentage=125
+r.ShadowQuality=5
+r.Mobile.KuroPostprocess=1
+r.BloomQuality=4
+r.Mobile.WaterSSR=1
+r.VolumetricFog=1
+
+=================================================================
+END OF CONFIG REFERENCE
+=================================================================

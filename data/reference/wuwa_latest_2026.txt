@@ -1,0 +1,175 @@
+# WuWa Data Collection - May 2026 Updated
+# ========================================
+
+## VERSION 3.3 / 3.4 INFO (May 2026)
+Version 3.3: "Reverbs From the End of Galaxies" - April 30, 2026
+Version 3.4: "Cyberpunk Collab" - June 8, 2026
+
+### Version 3.3-3.4 New Characters
+- Hiyuki (Spectro), Mornye, Iuno
+- Denia (Havoc), Chisa, Phrolova
+- Lucy (Spectro Pistols), Rebecca (free!)
+- Lucilla (Glacio Gauntlets)
+
+## GPU FAMILIES (2026)
+
+### Qualcomm Snapdragon (Adreno)
+| Model | Tier | Recommended |
+|-------|------|-------------|
+| Snapdragon 8 Elite (Gen 4) | Flagship | Ultra preset |
+| Snapdragon 8 Gen 3 | Flagship | Ultra preset |
+| Snapdragon 8 Gen 2 | High | High preset |
+| Snapdragon 8+ Gen 1 | High | High preset |
+| Snapdragon 7+ Gen 3 | Mid-High | Balanced |
+| Snapdragon 7 Gen 3 | Mid | Balanced |
+| Snapdragon 6 Gen 3 | Mid | Performance |
+| Snapdragon 6 Gen 1 | Low-Mid | Performance |
+
+### MediaTek Dimensity
+| Model | Tier | Recommended |
+|-------|------|-------------|
+| Dimensity 9400 | Flagship | Ultra preset |
+| Dimensity 9300+ | Flagship | Ultra preset |
+| Dimensity 8300 | High | High preset |
+| Dimensity 8200 | High | High preset |
+| Dimensity 7200 | Mid | Balanced |
+| Dimensity 6300 | Mid-Low | Performance |
+
+### ARM Mali
+| Model | Tier | Recommended |
+|-------|------|-------------|
+| Mali-G925 | Flagship | Ultra preset |
+| Mali-G720 | Flagship | Ultra preset |
+| Mali-G715 | High | High preset |
+| Mali-G610 | Mid | Balanced |
+| Mali-G510 | Low-Mid | Performance |
+
+## KEY CVARS 2026
+
+### FPS & Performance
+```
+r.Kuro.MaxFPS.ThirdParty120=1     # Unlock 120 FPS
+r.VSync=0                         # Disable VSync
+r.ScreenPercentage=85             # Balance
+r.HZBOcclusion=1                 # Fix cave white spots
+```
+
+### Quality Settings
+```
+r.ShadowQuality=3                # Medium-High shadows
+r.Mobile.KuroPostprocess=1       # Character rim light
+r.Kuro.NpcDisappearDistance=20000 # Fix NPC pop-in
+r.ViewDistanceScale=3             # Global view distance
+r.MaxAnisotropy=16               # Best texture quality
+```
+
+### Mobile Specific
+```
+r.Mobile.DeviceEvaluation=3       # Force flagship tier
+r.MobileContentScaleFactor=0.0    # Native resolution
+r.Kuro.AutoCoolEnable=1          # Thermal protection
+r.Mobile.WaterSSR=1              # Water reflections
+```
+
+### 2026 New CVars
+```
+# NVIDIA Reflex (lower input lag)
+t.Streamline.Reflex.Enable=1
+t.Streamline.Reflex.Mode=1
+
+# DLSS / Upscaling
+r.NGX.Enable=1
+r.NGX.DLSS.Quality=3
+
+# Vulkan fixes
+r.Vulkan.RobustBufferAccess=1
+r.Vulkan.StencilBuffer=1
+
+# Streaming
+r.Streaming.UsingNewKuroStreaming=1
+r.Streaming.PoolSize=600
+r.Streaming.MinBoost=4.0
+```
+
+## BUG FIXES REFERENCE
+
+| Issue | Fix CVar |
+|-------|----------|
+| White spots in caves | r.HZBOcclusion=1 |
+| NPC pop-in at distance | r.Kuro.NpcDisappearDistance=20000 |
+| Animation stuttering | a.URO.ForceAnimRate=1 |
+| Thermal throttling | r.Kuro.AutoCoolEnable=1 |
+| Low resolution (Android) | r.MobileContentScaleFactor=0.0 |
+| Can't reach 120 FPS | r.Kuro.MaxFPS.ThirdParty120=1 |
+| No Ultra option | r.Kuro.GraphicsQuality.ThirdPartyUltraEnable=1 |
+| Network lag | LGUIBlurTexture.save=0 |
+| Blurry textures | r.MipMapLODBias=-1 + r.MaxAnisotropy=16 |
+| Vulkan crashes | r.Vulkan.RobustBufferAccess=1 |
+| Input lag (PC) | r.VSync=0 + t.Streamline.Reflex.Enable=1 |
+
+## PRESETS (2026)
+
+### PERFORMANCE (Android/PC)
+```
+r.Kuro.MaxFPS.ThirdParty120=1
+r.ScreenPercentage=75
+r.ShadowQuality=0
+r.Fog=0
+r.KuroVolumeCloudEnable=0
+fx.KuroUseGPUParticles=0
+r.VSync=0
+r.HZBOcclusion=0
+```
+
+### BALANCED (Android/PC - Recommended)
+```
+r.Kuro.MaxFPS.ThirdParty120=1
+r.ScreenPercentage=85
+r.ShadowQuality=1
+r.Mobile.KuroPostprocess=1
+r.KuroVolumeCloudEnable=0
+r.HZBOcclusion=1
+r.Mobile.DeviceEvaluation=3
+r.Kuro.AutoCoolEnable=1
+```
+
+### HIGH (PC Only)
+```
+r.Kuro.MaxFPS.ThirdParty120=1
+r.Kuro.GraphicsQuality.ThirdPartyUltraEnable=1
+r.ScreenPercentage=100
+r.ShadowQuality=2
+r.Mobile.KuroPostprocess=1
+r.BloomQuality=3
+r.LightShaftQuality=1
+t.Streamline.Reflex.Enable=1
+```
+
+### ULTRA/RT (PC High-End)
+```
+r.Kuro.MaxFPS.ThirdParty120=1
+r.Kuro.GraphicsQuality.ThirdPartyUltraEnable=1
+r.ScreenPercentage=125
+r.ShadowQuality=5
+r.BloomQuality=4
+r.Mobile.WaterSSR=1
+r.VolumetricFog=1
+r.Lumen.Reflections.AsyncCompute=1
+```
+
+## SOURCES (May 2026)
+- game8.co - Settings guide
+- github.com/AlteriaX/WuWa-Configs - 1.4k stars
+- github.com/Geilan63lan/Wuwa-Mobile-Config
+- github.com/Arglax/Mobile-WuWa-Config
+- alteriax.github.io/WuWa-Config-Info
+- framedsc.com - UE4 commands
+- Reddit r/WutheringWaves
+
+## UPDATE LOG
+- May 2026: Added 2026 CVar database
+- Added GPU family detection
+- Added Dimensity 9000+ series
+- Added NVIDIA Reflex/DLSS
+- Added Vulkan 2026 fixes
+- Added streaming optimization

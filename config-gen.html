@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>WuWa Config Generator v2 · P42 Toolkit</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23020812'/%3E%3Ctext x='50' y='65' font-family='Arial' font-size='50' font-weight='bold' fill='%2300e5ff' text-anchor='middle'%3EP42%3C/text%3E%3C/svg%3E" />
+<meta property="og:title" content="WuWa Config Generator v2 · P42 Toolkit" />
+<meta property="og:description" content="Optimize Wuthering Waves on Android & PC. Generate custom Engine.ini configs." />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#22d3ee" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/config-gen.css">
+</head>
+<body>
+
+
+<!-- ══ SHOWCASE BACKGROUND ══ -->
+<div id="showcase-root"></div>
+<div id="scanlines"></div>
+<div id="grid-ov"></div>
+<div id="slide-prog"></div>
+
+<!-- Character Label -->
+<div class="char-meta" id="char-meta">
+  <div style="display:flex; gap:10px; align-items:center; margin-bottom: 8px;">
+    <div id="clab-elem-icon">SPECTRO</div>
+    <input type="text" id="char-search" placeholder="Search char/element..." style="background:rgba(9,15,28,.6);border:1px solid rgba(0,212,232,.3);border-radius:4px;color:var(--cy);font-family:var(--C);font-size:.6rem;padding:4px 8px;outline:none;width:160px;backdrop-filter:blur(4px);" onkeyup="searchChar()">
+  </div>
+  <div id="clab-name">JINHSI</div>
+  <div class="clab-sep"></div>
+  <div id="clab-sub" style="color:rgba(255,255,255,.25)">WUTHERING WAVES</div>
+</div>
+
+<!-- Image drop overlay — drag any image to assign it to current slide -->
+<div id="img-drop-overlay" style="display:none;position:fixed;inset:0;z-index:50;background:rgba(0,212,232,.08);border:2px dashed rgba(0,212,232,.5);pointer-events:none;align-items:center;justify-content:center;">
+  <div style="font-family:var(--H);font-size:1.2rem;color:var(--cy);letter-spacing:.2em;text-align:center;text-shadow:0 0 30px rgba(0,212,232,.8)">
+    DROP IMAGE<br><span style="font-size:.6rem;opacity:.6">Assign to current character slide</span>
+  </div>
+</div>
+
+<!-- Slide Dots -->
+<div class="cdots-wrap" id="cdots-wrap"></div>
+<div id="slide-counter" style="position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:5;font-family:var(--C);font-size:.54rem;color:rgba(0,212,232,.25);letter-spacing:.12em;pointer-events:none;"></div>
+
+<!-- ══ APP SHELL ══ -->
+<div class="app-shell">
+
+<!-- ════ SIDEBAR ════ -->
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div class="logo-title">P42 TOOLKIT</div>
+        <div class="logo-sub" style="color:rgba(0,212,232,.4)">Config Generator v2 · Android &amp; PC</div>
+        <div style="font-family:var(--C);font-size:.5rem;color:rgba(0,212,232,.2);margin-top:2px;letter-spacing:.04em">Drop character images anywhere · gif/png/jpg/webp</div>
+      </div>
+      <span class="badge badge-init" id="stat-badge">● INIT</span>
+    </div>
+  </div>
+
+  <!-- Nav Links — under header -->
+  <div class="nav-links">
+    <a href="index.html" class="nav-link home">⌂ TOOLKIT</a>
+    <a href="bot.html" class="nav-link ai">🤖 BOT</a>
+    <a href="wuwa-visuals.html" class="nav-link vis">🖼 VISUALS</a>
+  </div>
+
+  <!-- Platform -->
+  <div class="plat-switch">
+    <button class="plat-btn android active" id="plat-android" onclick="setPlatform('android')">📱 ANDROID</button>
+    <button class="plat-btn pc" id="plat-pc" onclick="setPlatform('pc')">🖥️ PC/WIN</button>
+  </div>
+
+  <!-- Brain Toggle -->
+  <div class="sidebar-section" style="padding:8px 14px 4px">
+    <div class="brain-toggle" id="brain-toggle" onclick="toggleBrain()">
+      <div class="bt-label">
+        <span class="bt-icon">🧠</span>
+        <span class="bt-text">SMART BRAIN</span>
+      </div>
+      <div class="bt-switch">
+        <div class="bt-track" id="brain-track"></div>
+        <div class="bt-thumb" id="brain-thumb"></div>
+      </div>
+    </div>
+    <div class="brain-status" id="brain-status">Auto-analyze & recommend settings based on your log</div>
+  </div>
+
+  <!-- Log Upload -->
+  <div class="sidebar-section">
+    <div class="sec-label">UPLOAD CLIENT.LOG</div>
+    <div class="drop-zone" id="drop-zone">
+      <input type="file" id="file-input" accept=".log,.txt">
+      <div class="dz-icon">📂</div>
+      <div class="dz-label">Drop <strong>Client.log</strong> here</div>
+      <div class="dz-hint" id="dz-hint">Android: Client/Saved/Logs/Client.log</div>
+      <div class="dz-hint" style="color:rgba(0,232,144,.35);margin-top:3px">v2: detects GPU · Vulkan · forbidden CVars · quality mode</div>
+    </div>
+    <div id="file-info-bar"></div>
+  </div>
+
+  <!-- Detected Info -->
+  <div id="detected-section" class="det-section">
+    <div class="det-header">
+      <div class="det-title">🔍 DETECTED FROM LOG</div>
+      <div class="det-badge" id="det-badge">✓ PARSED</div>
+    </div>
+
+    <!-- Quick status chips -->
+    <div class="det-status-row" id="det-chips"></div>
+
+    <!-- Hardware Group -->
+    <div class="det-group" id="det-hw" style="display:none">
+      <div class="det-group-hd">
+        <div class="det-group-icon" style="background:rgba(0,212,232,.08)">💻</div>
+        <span class="det-group-label">Hardware</span>
+        <div class="det-group-line"></div>
+      </div>
+      <div class="det-rows" id="det-hw-rows"></div>
+    </div>
+
+    <!-- Active Settings Group -->
+    <div class="det-group" id="det-sw" style="display:none">
+      <div class="det-group-hd">
+        <div class="det-group-icon" style="background:rgba(176,96,255,.08)">⚙</div>
+        <span class="det-group-label">Active Settings</span>
+        <div class="det-group-line"></div>
+      </div>
+      <div class="det-rows" id="det-sw-rows"></div>
+    </div>
+
+    <!-- Network Group -->
+    <div class="det-group" id="det-net" style="display:none">
+      <div class="det-group-hd">
+        <div class="det-group-icon" style="background:rgba(240,192,64,.08)">📡</div>
+        <span class="det-group-label">Network</span>
+        <div class="det-group-line"></div>
+      </div>
+      <div class="det-rows" id="det-net-rows"></div>
+      <div id="det-rtt-box" class="det-net-alert" style="display:none">
+        <div class="det-net-alert-title">⚠ HIGH LATENCY DETECTED</div>
+        <div class="det-net-alert-val" id="det-rtt-val"></div>
+      </div>
+    </div>
+
+    <!-- Diagnostics -->
+    <div class="det-diag">
+      <div class="det-diag-title">DIAGNOSTICS</div>
+      <div id="det-iss-list"></div>
+    </div>
+  </div>
+
+  <!-- Brain Recommendations -->
+  <div id="brain-panel" class="sidebar-section" style="display:none;padding:8px 14px 6px;">
+    <div class="brain-panel-header">
+      <span class="bp-icon">🧠</span>
+      <span class="bp-title">SMART RECOMMENDATION</span>
+    </div>
+    <div class="brain-panel-content" id="brain-rec-content"></div>
+    <div class="brain-panel-actions" id="brain-rec-actions"></div>
+  </div>
+
+  <!-- Preset -->
+  <div class="sidebar-section" style="padding-bottom:0">
+    <div class="sec-label">QUALITY PRESET</div>
+  </div>
+  <div class="preset-grid" id="preset-grid">
+    <div class="preset-card perf" data-p="performance" onclick="selectPreset(this)"><span class="pname">PERF</span><span class="psub">Max FPS</span></div>
+    <div class="preset-card bal active" data-p="balanced" onclick="selectPreset(this)"><span class="pname">BALANCED</span><span class="psub">FPS + Visual</span></div>
+    <div class="preset-card hi" data-p="high" onclick="selectPreset(this)"><span class="pname">HIGH</span><span class="psub">Better visuals</span></div>
+    <div class="preset-card vh" data-p="ultra" onclick="selectPreset(this)"><span class="pname">ULTRA/RT</span><span class="psub">Max quality</span></div>
+  </div>
+
+  <!-- Options: Android -->
+  <div class="sidebar-section" style="padding-bottom:0">
+    <div class="sec-label" id="opts-label">OPTIONS · ANDROID</div>
+  </div>
+  <div id="opts-android" class="opts-list">
+    <div class="opt-row"><div class="opt-label">FPS Cap<span class="opt-sub">Frame rate target</span></div>
+      <select id="fps-sel"><option value="30">30</option><option value="60" selected>60</option><option value="90">90</option><option value="120">120</option></select>
+    </div>
+    <div class="opt-row"><div class="opt-label">Device Profile<span class="opt-sub">No-log manual SoC/GPU target</span></div>
+      <select id="manual-profile">
+        <option value="auto" selected>Auto preset</option>
+        <option value="Android_Adreno830">Adreno 830 / 8 Elite</option>
+        <option value="Android_Adreno810">Adreno 810</option>
+        <option value="Android_Adreno750">Adreno 750 / 8 Gen 3</option>
+        <option value="Android_Adreno740">Adreno 740 / 8 Gen 2</option>
+        <option value="Android_Adreno7xx">Adreno 7xx</option>
+        <option value="Android_Adreno6xx_High">Adreno 6xx High</option>
+        <option value="Android_Adreno6xx">Adreno 6xx</option>
+        <option value="Android_Adreno6xx_Low">Adreno 6xx Low</option>
+        <option value="Android_Adreno5xx">Adreno 5xx</option>
+        <option value="Android_Adreno4xx">Adreno 4xx</option>
+        <option value="Android_Mali_G925">Mali G925</option>
+        <option value="Android_Mali_G720">Mali G720</option>
+        <option value="Android_Mali_G715">Mali G715</option>
+        <option value="Android_Mali_G710">Mali G710</option>
+        <option value="Android_Mali_G615">Mali G615</option>
+        <option value="Android_Mali_G61x">Mali G61x</option>
+        <option value="Android_Mali_G57">Mali G57</option>
+        <option value="Android_Mali_G5x">Mali G5x</option>
+        <option value="Android_Maleoon">Maleoon / Kirin</option>
+        <option value="Android_Xclipse9xx">Xclipse 9xx</option>
+        <option value="Android_Xclipse5xx">Xclipse 5xx</option>
+        <option value="Android_PowerVR_GM9xxx">PowerVR GM9xxx</option>
+        <option value="Android_PowerVR_BXM8xxx">PowerVR BXM8xxx</option>
+      </select>
+    </div>
+    <div class="opt-row"><div class="opt-label">Unlock 120 FPS<span class="opt-sub">In-game slider</span></div><label class="tog"><input type="checkbox" id="opt-120fps"><span class="tog-track"></span><span class="tog-th"></span></label></div>
+    <div class="opt-row"><div class="opt-label">Unlock Ultra Quality<span class="opt-sub">Shows Ultra option</span></div><label class="tog"><input type="checkbox" id="opt-ultra" checked><span class="tog-track"></span><span class="tog-th"></span></label></div>
+    <div class="opt-row"><div class="opt-label">VSync Off<span class="opt-sub">Lower input lag</span></div><label class="tog"><input type="checkbox" id="opt-vsync" checked><span class="tog-track"></span><span class="tog-th"></span></label></div>
+    <div class="opt-row"><div class="opt-label">Thermal Throttle<span class="opt-sub">Auto-limit FPS if hot</span></div><label class="tog"><input type="checkbox" id="opt-cool" checked><span class="tog-track"></span><span class="tog-th"></span></label></div>
+    <div class="opt-row"><div class="opt-label">Vulkan Stability<span class="opt-sub">r.Vulkan.RobustBufferAccess</span></div><label class="tog"><input type="checkbox" id="opt-vulkan"><span class="tog-track"></span><span class="tog-th"></span></label></div>
+    <div class="opt-row"><div class="opt-label">HZB Occlusion<span class="opt-sub">Fix cave white artifacts</span></div><label class="tog"><input type="checkbox" id="opt-hzb"><span class="tog-track"></span><span class="tog-th"></span></label></div>
+    <div class="opt-row"><div class="opt-label">Remove Fog &amp; Clouds<span class="opt-sub">r.Fog=0 + VolumeCloud off</span></div><label class="tog"><input type="checkbox" id="opt-fog"><span class="tog-track"></span><span class="tog-th"></span></label></div>
+    <div class="opt-row"><div class="opt-label">No Chromatic Aberr.<span class="opt-sub">SceneColorFringeQuality=0</span></div><label class="tog"><input type="checkbox" id="opt-ca" checked><span class="tog-track"></span><span class="tog-th"></span></label></div>
+    <div class="opt-row"><div class="opt-label">Network Optimization<span class="opt-sub">LGUIBlurTexture.save=0</span></div><label class="tog"><input type="checkbox" id="opt-net" checked><span class="tog-track"></span><span class="tog-th"></span></label></div>
+  </div>
+
+  <!-- Options: PC -->
+  <div id="opts-pc" class="opts-list" style="display:none">
+    <div class="opt-row"><div class="opt-label">HZB Occlusion<span class="opt-sub">Fix cave white spots</span></div><label class="tog"><input type="checkbox" id="pc-opt-hzb" checked><span class="tog-track"></span><span class="tog-th"></span></label></div>
+    <div class="opt-row"><div class="opt-label">Remove Fog &amp; Clouds<span class="opt-sub">r.Fog=0</span></div><label class="tog"><input type="checkbox" id="pc-opt-fog" checked><span class="tog-track"></span><span class="tog-th"></span></label></div>
+    <div class="opt-row"><div class="opt-label">Fix NPC Distance<span class="opt-sub">NpcDisappearDistance=20000</span></div><label class="tog"><input type="checkbox" id="pc-opt-npc" checked><span class="tog-track"></span><span class="tog-th"></span></label></div>
+    <div class="opt-row"><div class="opt-label">Fix Anim Stutter<span class="opt-sub">a.URO.ForceAnimRate=1</span></div><label class="tog"><input type="checkbox" id="pc-opt-anim" checked><span class="tog-track"></span><span class="tog-th"></span></label></div>
+    <div class="opt-row"><div class="opt-label">No Chromatic Aberr.<span class="opt-sub">SceneColorFringeQuality=0</span></div><label class="tog"><input type="checkbox" id="pc-opt-ca" checked><span class="tog-track"></span><span class="tog-th"></span></label></div>
+    <div class="opt-row"><div class="opt-label">Texture Boost<span class="opt-sub">Streaming.MinBoost=4.0</span></div><label class="tog"><input type="checkbox" id="pc-opt-stream" checked><span class="tog-track"></span><span class="tog-th"></span></label></div>
+    <div class="opt-row"><div class="opt-label">Unlock Ultra Quality<span class="opt-sub">DeviceProfiles override</span></div><label class="tog"><input type="checkbox" id="pc-opt-ultra" checked><span class="tog-track"></span><span class="tog-th"></span></label></div>
+    <div class="opt-row"><div class="opt-label">Fix Mouse Smoothing<span class="opt-sub">Input.ini extra file</span></div><label class="tog"><input type="checkbox" id="pc-opt-mouse" checked><span class="tog-track"></span><span class="tog-th"></span></label></div>
+    <div class="opt-row"><div class="opt-label">Disable Bloom Streak<span class="opt-sub">KuroBloomStreak=0</span></div><label class="tog"><input type="checkbox" id="pc-opt-bloom"><span class="tog-track"></span><span class="tog-th"></span></label></div>
+    <div class="opt-row"><div class="opt-label">Disable Lens Flare<span class="opt-sub">EnableLensflareSceneSample</span></div><label class="tog"><input type="checkbox" id="pc-opt-lensflare"><span class="tog-track"></span><span class="tog-th"></span></label></div>
+    <div class="opt-row"><div class="opt-label">NVIDIA Reflex<span class="opt-sub">Not for RTX 40/50 w/ FG</span></div><label class="tog"><input type="checkbox" id="pc-opt-reflex"><span class="tog-track"></span><span class="tog-th"></span></label></div>
+  </div>
+
+  <div class="sidebar-footer">
+    <button class="gen-btn" id="gen-btn" onclick="generate()">⚙ GENERATE CONFIG FILES</button>
+    <button class="reset-btn" onclick="resetAll()">↺ RESET ALL TO DEFAULTS</button>
+  </div>
+</div><!-- end sidebar -->
+
+<!-- ════ MAIN AREA ════ -->
+<div class="main-area">
+  <div class="topbar">
+    <span class="install-path" id="install-path">📁 /Android/data/com.kurogame.wutheringwaves.global/.../Config/Android/</span>
+    <span id="screen-tag"></span>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tab-engine" onclick="switchTab('engine')">ENGINE.INI</button>
+    <button class="tab-btn" id="tab-device" onclick="switchTab('device')">DEVICEPROFILES</button>
+    <button class="tab-btn" id="tab-gus" onclick="switchTab('gus')">GAMESETTINGS</button>
+    <button class="tab-btn" id="tab-input" onclick="switchTab('input')" style="display:none">INPUT.INI</button>
+    <button class="tab-btn" id="tab-guide" onclick="switchTab('guide')">GUIDE</button>
+    <button class="tab-btn" id="tab-ref" onclick="switchTab('ref')">REFERENCE</button>
+  </div>
+
+  <!-- Engine -->
+  <div class="tab-content active" id="content-engine">
+    <div class="code-view" id="cv-engine">
+      <div class="empty-state"><div class="empty-icon">⚙</div><div class="empty-txt">Upload Log → Select Preset → Generate</div></div>
+    </div>
+  </div>
+  <!-- Device -->
+  <div class="tab-content" id="content-device">
+    <div class="code-view" id="cv-device">
+      <div class="empty-state"><div class="empty-icon">📱</div><div class="empty-txt">No config yet</div></div>
+    </div>
+  </div>
+  <!-- GameUserSettings -->
+  <div class="tab-content" id="content-gus">
+    <div class="code-view" id="cv-gus">
+      <div class="empty-state"><div class="empty-icon">⚡</div><div class="empty-txt">No config yet</div></div>
+    </div>
+  </div>
+  <!-- Input -->
+  <div class="tab-content" id="content-input">
+    <div class="code-view" id="cv-input">
+      <div class="empty-state"><div class="empty-icon">🖱️</div><div class="empty-txt">PC only</div></div>
+    </div>
+  </div>
+
+  <!-- Guide -->
+  <div class="tab-content" id="content-guide">
+    <div class="guide-view">
+      <div class="guide-section">
+        <div class="g-title">📁 INSTALLATION PATH</div>
+        <div class="g-path" id="guide-path">
+          /storage/emulated/0/Android/data/<br>
+          com.kurogame.wutheringwaves.global/files/<br>
+          UE4Game/Client/Client/Saved/Config/Android/
+        </div>
+        <div class="g-note" style="margin-top:8px">📱 Android 13+: Use <strong>Shizuku + rish</strong> or root file manager to write to Android/data.</div>
+      </div>
+      <div class="guide-section">
+        <div class="g-title">⚡ QUICK STEPS</div>
+        <div class="g-step"><div class="snum">1</div><div class="stxt">Upload your <code>Client.log</code> — v2 detects GPU, Vulkan support, forbidden CVars, and more.</div></div>
+        <div class="g-step"><div class="snum">2</div><div class="stxt">Check <strong>DIAGNOSTICS</strong> if you uploaded a log — see GPU tier and quality issues.</div></div>
+        <div class="g-step"><div class="snum">3</div><div class="stxt">Select <strong>ANDROID</strong> or <strong>PC</strong>. Choose quality preset based on your GPU (PC presets based on AlteriaX WuWa-Configs).</div></div>
+        <div class="g-step"><div class="snum">4</div><div class="stxt">Click <code>⚙ GENERATE</code> then <code>⬇ DOWNLOAD ZIP</code> — <span id="guide-files-android">Engine.ini + DeviceProfiles.ini + GameUserSettings.ini</span><span id="guide-files-pc" style="display:none">Engine.ini (+ Input.ini for mouse fix)</span>.</div></div>
+        <div class="g-step"><div class="snum">5</div><div class="stxt" id="guide-step5-android">Copy files to <code>Android/data/.../Config/Android/</code>. To reset: delete the .ini files.</div><div class="stxt" id="guide-step5-pc" style="display:none">Copy Engine.ini to <code>Win64\</code> folder (or use <code>-EngineIni=Engine.ini</code> launch option). Optional: Input.ini to <code>WindowsNoEditor\</code>.</div></div>
+        <div class="g-step"><div class="snum">6</div><div class="stxt" id="guide-step6-android">In-game: Graphics → Quality → <strong>Quality Priority (画质优先)</strong>.</div><div class="stxt" id="guide-step6-pc" style="display:none">Launch game. For Steam add <code>-EngineIni=Engine.ini</code> to launch options.</div></div>
+      </div>
+      <div class="guide-section">
+        <div class="g-title">🔬 v2 KEY DISCOVERIES (from log research)</div>
+        <div class="g-note" style="margin-bottom:5px">⚠️ <strong>Forbidden CVars</strong> — some CVars are blacklisted by the game. If your log shows "5 forbidden CVars removed", your old config was broken. v2 only uses safe CVars.</div>
+        <div class="g-note" style="margin-bottom:5px">🔑 <strong>Late-register CVar</strong> — <code>r.streaming.QualityExtraLODBiasSetting</code> MUST go in DeviceProfiles.ini (not Engine.ini). The game registers this CVar after SystemSettings loads.</div>
+        <div class="g-note" style="margin-bottom:5px">🎮 <strong>KuroPostprocess OFF</strong> — default profile turns off character rim light! v2 forces it on (<code>r.Mobile.KuroPostprocess=1</code>).</div>
+        <div class="g-note" style="margin-bottom:5px">💥 <strong>GPU Particles crash (Mar 2026)</strong> — <code>fx.KuroUseGPUParticles=1</code> causes crashes. Always keep at 0.</div>
+        <div class="g-note">📐 <strong>Priority chain</strong>: SetBySystemSettingsIni &gt; SetByDeviceProfile &gt; SetByProjectSetting &gt; SetByScalability. Engine.ini [SystemSettings] has highest priority.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Reference -->
+  <div class="tab-content" id="content-ref">
+    <div class="guide-view">
+      <div class="guide-section">
+        <div class="g-title">🔧 KEY COMMANDS REFERENCE</div>
+        <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;align-items:center;">
+          <input type="text" id="ref-search" placeholder="Search commands..." style="background:rgba(9,15,28,.9);border:1px solid rgba(0,212,232,.3);border-radius:4px;color:var(--cy);font-family:var(--C);font-size:.65rem;padding:4px 8px;outline:none;width:180px;" onkeyup="searchRef()">
+          <button onclick="filterRef('all')" id="rf-all" class="rf-btn active">ALL</button>
+          <button onclick="filterRef('char')" id="rf-char" class="rf-btn">CHARACTER</button>
+          <button onclick="filterRef('shadow')" id="rf-shadow" class="rf-btn">SHADOW</button>
+          <button onclick="filterRef('texture')" id="rf-texture" class="rf-btn">TEXTURE</button>
+          <button onclick="filterRef('perf')" id="rf-perf" class="rf-btn">PERFORMANCE</button>
+          <button onclick="filterRef('fx')" id="rf-fx" class="rf-btn">EFFECTS</button>
+          <button onclick="filterRef('net')" id="rf-net" class="rf-btn">NETWORK</button>
+          <button onclick="filterRef('crash')" id="rf-crash" class="rf-btn" style="color:#ff4060">CRASH FIX</button>
+        </div>
+        <table class="cmd-table" id="ref-table">
+          <tr><th>COMMAND</th><th>DESCRIPTION</th><th>VALUES</th><th>NOTE</th></tr>
+          <!-- CRASH FIX -->
+          <tr data-cat="crash"><td class="cmd-n" style="color:#ff4060">fx.KuroUseGPUParticles</td><td class="cmd-d">⚠ GPU particle crash fix</td><td class="cmd-v">0 only!</td><td class="cmd-note" style="color:#ff6060">MANDATORY</td></tr>
+          <tr data-cat="crash"><td class="cmd-n" style="color:#ff4060">Niagara.GPUDrawIndirectArgsBufferSlack</td><td class="cmd-d">Niagara crash buffer</td><td class="cmd-v">4096</td><td class="cmd-note" style="color:#ff6060">MANDATORY</td></tr>
+          <!-- CHARACTER -->
+          <tr data-cat="char"><td class="cmd-n" style="color:#00e890">r.Mobile.KuroPostprocess</td><td class="cmd-d">Character rim light, skin glow</td><td class="cmd-v">0–1</td><td class="cmd-note">default OFF!</td></tr>
+          <tr data-cat="char"><td class="cmd-n" style="color:#00e890">r.Kuro.SkeletalMesh.LODScreenSizeScale</td><td class="cmd-d">Char LOD quality at distance</td><td class="cmd-v">3.5–7.0</td><td class="cmd-note">default 3.5</td></tr>
+          <tr data-cat="char"><td class="cmd-n" style="color:#00e890">r.Kuro.ToonOutlineDrawDistanceMobile</td><td class="cmd-d">Character outline distance</td><td class="cmd-v">500–1500</td><td class="cmd-note">default 500</td></tr>
+          <tr data-cat="char"><td class="cmd-n" style="color:#00e890">r.Kuro.ToonEyeTransparentDrawDistanceMobile</td><td class="cmd-d">Character eye rendering distance</td><td class="cmd-v">200–750</td><td class="cmd-note">default 200</td></tr>
+          <tr data-cat="char"><td class="cmd-n" style="color:#00e890">r.Kuro.ToonFaceShadowMeshDrawDistanceMobile</td><td class="cmd-d">Character face shadow distance</td><td class="cmd-v">200–750</td><td class="cmd-note">default 200</td></tr>
+          <tr data-cat="char"><td class="cmd-n">r.Shadow.SkeletalMeshLODBias</td><td class="cmd-d">Shadow quality on characters</td><td class="cmd-v">0–4</td><td class="cmd-note">lower=better</td></tr>
+          <tr data-cat="char"><td class="cmd-n">r.SkeletalMeshLODBias</td><td class="cmd-d">Character model LOD bias</td><td class="cmd-v">-1–2</td><td class="cmd-note">game forces 1</td></tr>
+          <tr data-cat="char"><td class="cmd-n">r.Mobile.OutlineScale</td><td class="cmd-d">Character outline thickness</td><td class="cmd-v">0.8–1.5</td><td class="cmd-note">default 1.0</td></tr>
+          <tr data-cat="char"><td class="cmd-n">r.Kuro.AutoExposure</td><td class="cmd-d">Auto exposure for character lighting</td><td class="cmd-v">0–1</td><td class="cmd-note">recommend 1</td></tr>
+          <tr data-cat="char"><td class="cmd-n">r.Mobile.TreeRimLight</td><td class="cmd-d">Rim light on environment objects</td><td class="cmd-v">0–1</td><td class="cmd-note"></td></tr>
+          <tr data-cat="char"><td class="cmd-n">r.Kuro.RadialBlur.MobileIntensityScalar</td><td class="cmd-d">Skill radial blur intensity</td><td class="cmd-v">0–1.5</td><td class="cmd-note"></td></tr>
+          <!-- SHADOW -->
+          <tr data-cat="shadow"><td class="cmd-n">sg.ShadowQuality</td><td class="cmd-d">Global shadow tier</td><td class="cmd-v">0–5</td><td class="cmd-note">DeviceProfile may override</td></tr>
+          <tr data-cat="shadow"><td class="cmd-n">r.Shadow.CSM.MaxMobileCascades</td><td class="cmd-d">Shadow cascade count</td><td class="cmd-v">1–3</td><td class="cmd-note">default 2</td></tr>
+          <tr data-cat="shadow"><td class="cmd-n">r.Shadow.KuroEnablePointLightShadow</td><td class="cmd-d">Point light shadows</td><td class="cmd-v">0–1</td><td class="cmd-note">GPU heavy</td></tr>
+          <tr data-cat="shadow"><td class="cmd-n">r.Shadow.RadiusThresholdFar</td><td class="cmd-d">Shadow draw distance threshold</td><td class="cmd-v">0.04–0.15</td><td class="cmd-note">lower=further</td></tr>
+          <tr data-cat="shadow"><td class="cmd-n">r.Kuro.GlobalLightQuality_PC</td><td class="cmd-d">Global light quality level</td><td class="cmd-v">1–4</td><td class="cmd-note"></td></tr>
+          <tr data-cat="shadow"><td class="cmd-n">r.HZBOcclusion</td><td class="cmd-d">Fix cave/dark area white artifacts</td><td class="cmd-v">0–1</td><td class="cmd-note"></td></tr>
+          <!-- TEXTURE -->
+          <tr data-cat="texture"><td class="cmd-n" style="color:#f0c040">r.streaming.QualityExtraLODBiasSetting</td><td class="cmd-d">Texture sharpness (DeviceProfile ONLY!)</td><td class="cmd-v">80–975</td><td class="cmd-note" style="color:#f0c040">late-register</td></tr>
+          <tr data-cat="texture"><td class="cmd-n">sg.TextureQuality</td><td class="cmd-d">Texture quality tier</td><td class="cmd-v">0–4</td><td class="cmd-note"></td></tr>
+          <tr data-cat="texture"><td class="cmd-n">r.Streaming.PoolSize</td><td class="cmd-d">Texture streaming pool (MB)</td><td class="cmd-v">256–1024</td><td class="cmd-note">increase if errors</td></tr>
+          <tr data-cat="texture"><td class="cmd-n">r.Streaming.Boost</td><td class="cmd-d">Texture streaming priority multiplier</td><td class="cmd-v">0.5–2.0</td><td class="cmd-note"></td></tr>
+          <tr data-cat="texture"><td class="cmd-n">r.Streaming.MipBias</td><td class="cmd-d">Mipmap LOD bias (lower=sharper)</td><td class="cmd-v">-1–2</td><td class="cmd-note"></td></tr>
+          <tr data-cat="texture"><td class="cmd-n">r.MaxAnisotropy</td><td class="cmd-d">Anisotropic filtering quality</td><td class="cmd-v">4, 8, 16</td><td class="cmd-note"></td></tr>
+          <tr data-cat="texture"><td class="cmd-n">r.streaming.TexturePoolSizeMode</td><td class="cmd-d">Streaming pool allocation mode</td><td class="cmd-v">0–2</td><td class="cmd-note">1=fixed</td></tr>
+          <!-- PERFORMANCE -->
+          <tr data-cat="perf"><td class="cmd-n">r.FramePace</td><td class="cmd-d">Target frame rate</td><td class="cmd-v">30/60/90/120</td><td class="cmd-note"></td></tr>
+          <tr data-cat="perf"><td class="cmd-n">r.MobileHDR</td><td class="cmd-d">Mobile HDR rendering</td><td class="cmd-v">0–1</td><td class="cmd-note">1=better</td></tr>
+          <tr data-cat="perf"><td class="cmd-n">r.Mobile.DeviceEvaluation</td><td class="cmd-d">Force GPU tier evaluation</td><td class="cmd-v">1–3</td><td class="cmd-note">3=high-end</td></tr>
+          <tr data-cat="perf"><td class="cmd-n">r.MobileContentScaleFactor</td><td class="cmd-d">Content scale (0=native)</td><td class="cmd-v">0.0–2.0</td><td class="cmd-note">0=native res</td></tr>
+          <tr data-cat="perf"><td class="cmd-n">r.SecondaryScreenPercentage.GameViewport</td><td class="cmd-d">Secondary render scale</td><td class="cmd-v">66–100</td><td class="cmd-note">100=full</td></tr>
+          <tr data-cat="perf"><td class="cmd-n">r.EnableAggressivePVS</td><td class="cmd-d">Aggressive occlusion culling</td><td class="cmd-v">0–1</td><td class="cmd-note">FPS boost</td></tr>
+          <tr data-cat="perf"><td class="cmd-n">r.BBM.LODBias</td><td class="cmd-d">Billboard mesh LOD bias</td><td class="cmd-v">0–2</td><td class="cmd-note">0=best</td></tr>
+          <tr data-cat="perf"><td class="cmd-n">r.imp.SSMbScaleLod0</td><td class="cmd-d">Imposter LOD0 scale (0=real mesh)</td><td class="cmd-v">0.0–2.5</td><td class="cmd-note">0=best quality</td></tr>
+          <tr data-cat="perf"><td class="cmd-n">r.Kuro.MobileISMDecideDistance</td><td class="cmd-d">ISM instance draw distance</td><td class="cmd-v">6000–18000</td><td class="cmd-note"></td></tr>
+          <tr data-cat="perf"><td class="cmd-n">lod.TemporalLag</td><td class="cmd-d">Temporal LOD smoothing</td><td class="cmd-v">0–1</td><td class="cmd-note">1=smooth</td></tr>
+          <tr data-cat="perf"><td class="cmd-n">r.ShaderPipelineCache.Enabled</td><td class="cmd-d">Shader cache (prevent stutters)</td><td class="cmd-v">0–1</td><td class="cmd-note">keep 1</td></tr>
+          <tr data-cat="perf"><td class="cmd-n">r.Kuro.AutoCoolEnable</td><td class="cmd-d">Thermal throttle protection</td><td class="cmd-v">0–1</td><td class="cmd-note"></td></tr>
+          <tr data-cat="perf"><td class="cmd-n">r.AllowPrecomputedVisibility</td><td class="cmd-d">Use baked PVS data</td><td class="cmd-v">0–1</td><td class="cmd-note">1=faster</td></tr>
+          <!-- EFFECTS -->
+          <tr data-cat="fx"><td class="cmd-n">sg.EffectsQuality</td><td class="cmd-d">Effects/particle quality tier</td><td class="cmd-v">0–4</td><td class="cmd-note"></td></tr>
+          <tr data-cat="fx"><td class="cmd-n">fx.Niagara.QualityLevel</td><td class="cmd-d">Niagara particle quality</td><td class="cmd-v">0–2</td><td class="cmd-note"></td></tr>
+          <tr data-cat="fx"><td class="cmd-n">r.EmitterSpawnRateScale</td><td class="cmd-d">Particle spawn rate multiplier</td><td class="cmd-v">0.3–1.5</td><td class="cmd-note"></td></tr>
+          <tr data-cat="fx"><td class="cmd-n">r.BloomQuality</td><td class="cmd-d">Bloom effect quality</td><td class="cmd-v">0–5</td><td class="cmd-note"></td></tr>
+          <tr data-cat="fx"><td class="cmd-n">r.Kuro.KuroBloomEnable</td><td class="cmd-d">Kuro custom bloom</td><td class="cmd-v">0–1</td><td class="cmd-note"></td></tr>
+          <tr data-cat="fx"><td class="cmd-n">r.DepthOfFieldQuality</td><td class="cmd-d">Depth of field quality</td><td class="cmd-v">0–2</td><td class="cmd-note">0=off</td></tr>
+          <tr data-cat="fx"><td class="cmd-n">r.LightShaftQuality</td><td class="cmd-d">Light shaft / god ray quality</td><td class="cmd-v">0–1</td><td class="cmd-note"></td></tr>
+          <tr data-cat="fx"><td class="cmd-n">r.Mobile.WaterSSR</td><td class="cmd-d">Water reflections (needs Vulkan)</td><td class="cmd-v">0–1</td><td class="cmd-note"></td></tr>
+          <tr data-cat="fx"><td class="cmd-n">r.Mobile.SSR</td><td class="cmd-d">Screen-space reflections</td><td class="cmd-v">0–1</td><td class="cmd-note"></td></tr>
+          <tr data-cat="fx"><td class="cmd-n">r.Mobile.SSAO</td><td class="cmd-d">Screen-space ambient occlusion</td><td class="cmd-v">0–1</td><td class="cmd-note">❌ FORBIDDEN</td></tr>
+          <tr data-cat="fx"><td class="cmd-n">r.DisableDistortion</td><td class="cmd-d">Disable heat/refraction distortion</td><td class="cmd-v">0–1</td><td class="cmd-note">1=off=faster</td></tr>
+          <tr data-cat="fx"><td class="cmd-n">r.AmbientOcclusionLevels</td><td class="cmd-d">AO quality levels</td><td class="cmd-v">0–4</td><td class="cmd-note"></td></tr>
+          <tr data-cat="fx"><td class="cmd-n">r.Kuro.EnablePlanarReflection</td><td class="cmd-d">Planar reflections on surfaces</td><td class="cmd-v">0–1</td><td class="cmd-note"></td></tr>
+          <tr data-cat="fx"><td class="cmd-n">r.Fog</td><td class="cmd-d">Distance fog rendering</td><td class="cmd-v">0–1</td><td class="cmd-note"></td></tr>
+          <tr data-cat="fx"><td class="cmd-n">r.Kuro.SuperFarFogGlobalDistanceScale</td><td class="cmd-d">Far fog distance scale</td><td class="cmd-v">0–2</td><td class="cmd-note"></td></tr>
+          <tr data-cat="fx"><td class="cmd-n">r.Kuro.LandscapeCapture</td><td class="cmd-d">Landscape reflection capture</td><td class="cmd-v">0–1</td><td class="cmd-note"></td></tr>
+          <!-- NETWORK -->
+          <tr data-cat="net"><td class="cmd-n">r.kuro.LGUIBlurTexture.save</td><td class="cmd-d">Disable UI blur texture saving</td><td class="cmd-v">0–1</td><td class="cmd-note">0=network opt</td></tr>
+          <tr data-cat="net"><td class="cmd-n">r.Vulkan.RobustBufferAccess</td><td class="cmd-d">Vulkan buffer validation</td><td class="cmd-v">0–1</td><td class="cmd-note">1=stable</td></tr>
+          <tr data-cat="net"><td class="cmd-n">r.Vulkan.DescriptorSetLayoutMode</td><td class="cmd-d">Vulkan descriptor layout mode</td><td class="cmd-v">0–2</td><td class="cmd-note">2=best</td></tr>
+          <tr data-cat="net"><td class="cmd-n">r.Kuro.GraphicsQuality.ThirdPartyUltraEnable</td><td class="cmd-d">Unlock Ultra quality in-game slider</td><td class="cmd-v">0–1</td><td class="cmd-note"></td></tr>
+          <tr data-cat="net"><td class="cmd-n">r.Kuro.MaxFPS.ThirdParty60</td><td class="cmd-d">Unlock 60 FPS slider</td><td class="cmd-v">0–1</td><td class="cmd-note"></td></tr>
+          <tr data-cat="net"><td class="cmd-n">r.Kuro.MaxFPS.ThirdParty120</td><td class="cmd-d">Unlock 120 FPS slider</td><td class="cmd-v">0–1</td><td class="cmd-note"></td></tr>
+          <tr data-cat="net"><td class="cmd-n">r.FidelityFX.FSR.RCAS.Enabled</td><td class="cmd-d">FSR sharpening</td><td class="cmd-v">0–1</td><td class="cmd-note">❌ FORBIDDEN</td></tr>
+          <tr data-cat="net"><td class="cmd-n">r.TemporalAA.Sharpness</td><td class="cmd-d">TAA sharpness</td><td class="cmd-v">0–1</td><td class="cmd-note">❌ FORBIDDEN</td></tr>
+        </table>
+        <div style="margin-top:12px;padding:8px 10px;background:rgba(176,96,255,.04);border:1px solid rgba(176,96,255,.12);border-radius:5px;font-family:var(--C);font-size:.65rem;color:rgba(176,96,255,.7);">
+          📚 <a href="https://github.com/AlteriaX/WuWa-Configs-Android" target="_blank" style="color:var(--mg)">AlteriaX GitHub</a> · <a href="https://framedsc.com/GeneralGuides/ue4_commands.htm" target="_blank" style="color:var(--mg)">framedsc UE4</a> · <a href="https://dev.epicgames.com/documentation/en-us/unreal-engine" target="_blank" style="color:var(--mg)">Epic UE4 Docs</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DL Bar -->
+  <div class="dl-bar" id="dl-bar">
+    <button class="dl-btn primary" onclick="downloadZip()">⬇ DOWNLOAD ZIP</button>
+    <button class="dl-btn sec" onclick="copyActive()">📋 COPY ACTIVE</button>
+    <button class="dl-btn" onclick="openReportIssue()" style="border-color:rgba(176,96,255,.25);color:var(--mg);background:rgba(176,96,255,.04)">⚠ REPORT ISSUE</button>
+    <button class="dl-btn danger" onclick="resetAll()">↺ RESET</button>
+    <span class="dl-info" id="dl-info"></span>
+  </div>
+
+<!-- Report Issue Modal -->
+<div id="report-modal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(4,8,15,.92);backdrop-filter:blur(8px);align-items:center;justify-content:center;">
+  <div style="background:rgba(9,15,28,.98);border:1px solid rgba(176,96,255,.2);border-radius:10px;padding:20px;max-width:400px;width:90%;font-family:var(--M);">
+    <div style="font-family:var(--H);font-size:.7rem;color:var(--mg);letter-spacing:.15em;margin-bottom:12px">⚠ REPORT CONFIG ISSUE</div>
+    <div style="font-size:.72rem;color:var(--tx);margin-bottom:10px">Help improve P42Brain by reporting your experience with this config.</div>
+    <div style="margin-bottom:10px">
+      <div style="font-family:var(--H);font-size:.5rem;color:rgba(0,212,232,.5);letter-spacing:.1em;margin-bottom:5px">PROBLEM TYPE</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;">
+        <button onclick="selectReportType(this,'crash')" class="report-type-btn" style="font-family:var(--C);font-size:.58rem;padding:4px 10px;border-radius:4px;border:1px solid rgba(255,64,96,.25);color:var(--rd);background:transparent;cursor:pointer;">💥 Crashes</button>
+        <button onclick="selectReportType(this,'low_fps')" class="report-type-btn" style="font-family:var(--C);font-size:.58rem;padding:4px 10px;border-radius:4px;border:1px solid rgba(240,192,64,.25);color:var(--gd);background:transparent;cursor:pointer;">🐌 Low FPS</button>
+        <button onclick="selectReportType(this,'thermal')" class="report-type-btn" style="font-family:var(--C);font-size:.58rem;padding:4px 10px;border-radius:4px;border:1px solid rgba(255,64,96,.25);color:var(--rd);background:transparent;cursor:pointer;">🔥 Overheating</button>
+        <button onclick="selectReportType(this,'texture')" class="report-type-btn" style="font-family:var(--C);font-size:.58rem;padding:4px 10px;border-radius:4px;border:1px solid rgba(240,192,64,.25);color:var(--gd);background:transparent;cursor:pointer;">📦 Textures</button>
+        <button onclick="selectReportType(this,'stutter')" class="report-type-btn" style="font-family:var(--C);font-size:.58rem;padding:4px 10px;border-radius:4px;border:1px solid rgba(0,212,232,.25);color:var(--cy);background:transparent;cursor:pointer;">📉 Stuttering</button>
+        <button onclick="selectReportType(this,'good')" class="report-type-btn" style="font-family:var(--C);font-size:.58rem;padding:4px 10px;border-radius:4px;border:1px solid rgba(0,232,144,.25);color:var(--gr);background:transparent;cursor:pointer;">✅ Works Great</button>
+      </div>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="font-family:var(--H);font-size:.5rem;color:rgba(0,212,232,.5);letter-spacing:.1em;margin-bottom:4px">ACTUAL FPS (if known)</div>
+      <input id="report-fps" type="number" placeholder="e.g. 45" style="width:100%;background:rgba(9,15,28,.9);border:1px solid rgba(0,212,232,.18);border-radius:5px;color:var(--cy);font-family:var(--C);font-size:.7rem;padding:6px 8px;outline:none;">
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="font-family:var(--H);font-size:.5rem;color:rgba(0,212,232,.5);letter-spacing:.1em;margin-bottom:4px">NOTES (optional)</div>
+      <textarea id="report-notes" placeholder="Any additional details..." style="width:100%;height:60px;background:rgba(9,15,28,.9);border:1px solid rgba(0,212,232,.18);border-radius:5px;color:var(--wh);font-family:var(--C);font-size:.65rem;padding:6px 8px;outline:none;resize:vertical;"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="submitReport()" style="flex:1;padding:8px;border-radius:5px;cursor:pointer;font-family:var(--H);font-size:.6rem;letter-spacing:.1em;border:1px solid rgba(176,96,255,.35);color:var(--mg);background:rgba(176,96,255,.1);">📤 SUBMIT</button>
+      <button onclick="closeReportModal()" style="flex:1;padding:8px;border-radius:5px;cursor:pointer;font-family:var(--H);font-size:.6rem;letter-spacing:.1em;border:1px solid rgba(0,212,232,.2);color:var(--tx);background:transparent;">✕ CANCEL</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- end main-area -->
+</div><!-- end app-shell -->
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/js/config-gen.js"></script>
+<!-- Firebase compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<!-- P42Brain v4 — Smart Intelligence · wuwa-configs -->
+<script src="assets/js/p42brain.js"></script>
+</body>
+</html>
